@@ -1,0 +1,10 @@
+use_frameworks!
+
+target 'TWImageBrowser_Example' do
+  pod 'TWImageBrowser', :path => '../'
+end
+
+target 'TWImageBrowser_Tests' do
+    pod 'TWImageBrowser', :path => '../'
+    pod 'FBSnapshotTestCase'
+end

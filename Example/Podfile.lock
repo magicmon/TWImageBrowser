@@ -1,0 +1,21 @@
+PODS:
+  - FBSnapshotTestCase (2.1.0):
+    - FBSnapshotTestCase/SwiftSupport (= 2.1.0)
+  - FBSnapshotTestCase/Core (2.1.0)
+  - FBSnapshotTestCase/SwiftSupport (2.1.0):
+    - FBSnapshotTestCase/Core
+  - TWImageBrowser (0.1.0)
+
+DEPENDENCIES:
+  - FBSnapshotTestCase
+  - TWImageBrowser (from `../`)
+
+EXTERNAL SOURCES:
+  TWImageBrowser:
+    :path: ../
+
+SPEC CHECKSUMS:
+  FBSnapshotTestCase: 366ecd378511d7716c79991cd8067d1eed23578d
+  TWImageBrowser: 6ad1b908cd252d12fb80d3a8a506c767b8032b52
+
+COCOAPODS: 0.39.0
