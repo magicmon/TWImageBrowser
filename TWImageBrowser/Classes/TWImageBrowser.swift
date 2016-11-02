@@ -9,8 +9,9 @@
 import UIKit
 
 public protocol TWImageBrowserDataSource {
-    func backgroundImage(imageBrowser: TWImageBrowser) -> UIImage?
-    func loadObjects(imageBrowser: TWImageBrowser) -> [AnyObject]?
+    func backgroundImage(imageBrowser: TWImageBrowser) -> UIImage?      // 로드 시 사용할 백그라운드 이미지
+    func loadObjects(imageBrowser: TWImageBrowser) -> [AnyObject]?      // 로드 할 이미지
+    func showDefaultPageIndex(imageBrowser: TWImageBrowser) -> Int           // 제일 처음에 보여줄 이미지의 페이지 번호
 }
 
 public protocol TWImageBrowserDelegate {
@@ -44,7 +45,7 @@ public class TWImageBrowser: UIView, UIScrollViewDelegate {
     
     private var viewPadding: CGFloat = 0.0                  // 각 이미지뷰 사이의 간격
     public var viewInset: CGFloat {
-        get{
+        get {
             return self.viewPadding
         }
         
@@ -130,15 +131,27 @@ public class TWImageBrowser: UIView, UIScrollViewDelegate {
                 return
             }
             
-            var offsetWidth: CGFloat = 0.0
+            // 제일 처음 보여줄 화면 번호
+            var defaultPageIndex = 0
+            if let mainPageIndex = self.dataSource?.showDefaultPageIndex(self) {
+                if mainPageIndex < 0 {
+                    defaultPageIndex = 0
+                } else if mainPageIndex >= objectList.count {
+                    defaultPageIndex = objectList.count - 1
+                } else {
+                    defaultPageIndex = mainPageIndex
+                }
+            }
+            
+            var offset: CGPoint = CGPointZero
             
             switch self.browserType {
             case .NORMAL:
                 self.imageObjects = objectList
                 self.pageControl.hidden = true
-                break
-            case .BANNER:
                 
+                offset = CGPointMake((self.scrollView.frame.width * CGFloat(defaultPageIndex)) + ((2 * self.viewPadding) * CGFloat(defaultPageIndex)), 0)
+            case .BANNER:
                 // make image list
                 // 형태는 다음과 같다
                 // 이미지1, 이미지2, 이미지3 이라면 ->>> 이미지3 | 이미지1 | 이미지2 | 이미지3 | 이미지1
@@ -165,7 +178,7 @@ public class TWImageBrowser: UIView, UIScrollViewDelegate {
                 self.imageObjects = objectList
                 
                 // offset 지정(두번째 페이지가 1번이 된다)
-                offsetWidth = CGFloat(self.bounds.width + (2 * self.viewPadding))
+                offset = CGPointMake((self.scrollView.frame.width * CGFloat(defaultPageIndex + 1)) + ((2 * self.viewPadding) * CGFloat(defaultPageIndex + 1)), 0)
                 
                 // bounces 처리 제거(페이지 이동 시 튀는 현상)
                 self.scrollView.bounces = false
@@ -176,12 +189,13 @@ public class TWImageBrowser: UIView, UIScrollViewDelegate {
                 } else {
                     self.pageControl.hidden = objectList.count > 3 ? false : true
                 }
-                break
             }
+            
             
             self.scrollView.frame = CGRectMake(-self.viewPadding, 0, self.bounds.width + (2 * self.viewPadding), self.bounds.height)
             self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.width * CGFloat(self.imageObjects.count), self.scrollView.frame.height)
-            self.scrollView.setContentOffset(CGPointMake(offsetWidth, 0), animated: false)
+            
+            self.scrollView.setContentOffset(offset, animated: false)
             
             // set image View
             for (index, object) in self.imageObjects.enumerate() {
@@ -219,7 +233,7 @@ public class TWImageBrowser: UIView, UIScrollViewDelegate {
             
             // 화면에 보여줄 페이지 번호 설정
             self.pageControl.numberOfPages = self.totalPage
-            self.pageControl.currentPage = 0
+            self.pageControl.currentPage = defaultPageIndex
         } else {
             // 이미지를 하나도 받지 못하면 대표 백그라운드 이미지 하나만 보여준다
             

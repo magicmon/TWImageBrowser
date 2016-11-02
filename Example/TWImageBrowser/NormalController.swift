@@ -40,6 +40,7 @@ class NormalController: UIViewController, TWImageBrowserDelegate, TWImageBrowser
         imageList.append("https://pixabay.com/static/uploads/photo/2015/11/23/11/57/hot-chocolate-1058197_960_720.jpg")
         imageList.append("https://pixabay.com/static/uploads/photo/2015/09/17/14/24/guitar-944261_960_720.jpg")
         imageList.append("https://pixabay.com/static/uploads/photo/2016/01/19/14/25/octagonal-pavilion-1148883_960_720.jpg")
+        imageList.append("https://pixabay.com/static/uploads/photo/2015/11/23/11/57/hot-chocolate-1058197_960_720.jpg")
     }
     
     func setTopButton() {
@@ -65,6 +66,10 @@ class NormalController: UIViewController, TWImageBrowserDelegate, TWImageBrowser
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
     }
     
     override func willAnimateRotationToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
@@ -100,6 +105,9 @@ class NormalController: UIViewController, TWImageBrowserDelegate, TWImageBrowser
         return imageList
     }
     
+    func showDefaultPageIndex(imageBrowser: TWImageBrowser) -> Int {
+        return 4
+    }
     
     // MARK: - Delegate
     func imageBrowserDidScroll(imageBrowser : TWImageBrowser) {

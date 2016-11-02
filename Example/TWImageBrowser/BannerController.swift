@@ -23,7 +23,7 @@ class BannerController: UIViewController, TWImageBrowserDelegate, TWImageBrowser
         testViewer.browserType = .BANNER
         testViewer.delegate = self
         testViewer.dataSource = self
-        testViewer.autoPlayTimeInterval = 1.0
+        testViewer.autoPlayTimeInterval = 3.0
         
         testViewer.backgroundColor = UIColor.blackColor()
         self.automaticallyAdjustsScrollViewInsets = false   // 필수 지정
@@ -59,6 +59,10 @@ class BannerController: UIViewController, TWImageBrowserDelegate, TWImageBrowser
         imageList.append("https://pixabay.com/static/uploads/photo/2015/09/17/14/24/guitar-944261_960_720.jpg")
         
         return imageList
+    }
+    
+    func showDefaultPageIndex(imageBrowser: TWImageBrowser) -> Int {
+        return 0
     }
     
     
