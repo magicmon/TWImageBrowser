@@ -2,7 +2,7 @@
 //  TWImageBrowser+Page.swift
 //  TWImageBrowser
 //
-//  Created by Tae Woo Kang on 2016. 11. 3..
+//  Created by magicmon on 2016. 11. 3..
 //  Copyright © 2016 magicmon. All rights reserved.
 //
 //

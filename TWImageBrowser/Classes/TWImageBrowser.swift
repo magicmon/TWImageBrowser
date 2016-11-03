@@ -2,7 +2,7 @@
 //  TWImageBrowser.swift
 //  TWImageBrowser
 //
-//  Created by Tae Woo Kang on 2016. 5. 26..
+//  Created by magicmon on 2016. 5. 26..
 //  Copyright © 2016 magicmon. All rights reserved.
 //
 
@@ -12,12 +12,14 @@ import AlamofireImage
 public protocol TWImageBrowserDataSource {
     func backgroundImage(imageBrowser: TWImageBrowser) -> UIImage?      // 로드 시 사용할 백그라운드 이미지
     func loadObjects(imageBrowser: TWImageBrowser) -> [AnyObject]?      // 로드 할 이미지
-    func showDefaultPageIndex(imageBrowser: TWImageBrowser) -> Int           // 제일 처음에 보여줄 이미지의 페이지 번호
+    func showDefaultPageIndex(imageBrowser: TWImageBrowser) -> Int      // 제일 처음에 보여줄 이미지의 페이지 번호
 }
 
 public protocol TWImageBrowserDelegate {
     func imageBrowserDidScroll(imageBrowser: TWImageBrowser)
     func imageBrowserDidEndScrollingAnimation(imageBrowser: TWImageBrowser)
+    func imageBrowserDidSingleTap(imageBrowser: TWImageBrowser, page: Int)
+    func imageBrowserDidDoubleTap(imageBrowser: TWImageBrowser, page: Int)
 }
 
 public enum TWImageBrowserType: Int {
@@ -220,6 +222,7 @@ public class TWImageBrowser: UIView {
                 } else {
                     // 이미지나 URL이 넘어왔을 경우
                     let imageView = TWImageView(frame: frameForView(index), browserType: browserType)
+                    imageView.imageDelegate = self
                     
                     switch self.browserType {
                     case .NORMAL:
@@ -263,6 +266,7 @@ public class TWImageBrowser: UIView {
             let imageView = TWImageView(frame: frameForView(0), browserType: browserType)
             imageView.tag = 1
             imageView.setupImage(backgroundImage)
+            imageView.imageDelegate = self
             
             self.scrollView.addSubview(imageView)
             
@@ -337,53 +341,14 @@ public class TWImageBrowser: UIView {
         self.performSelector(autoScrollFunctionName, withObject: nil, afterDelay: self.autoPlayTimeInterval)
     }
     
-    // MARK: - Data Set
-    public func setPageControlColor(currentTintColor: UIColor, pageIndicatorTintColor: UIColor) {
-        self.pageControl.currentPageIndicatorTintColor = currentTintColor
-        self.pageControl.pageIndicatorTintColor = pageIndicatorTintColor
+}
+
+extension TWImageBrowser: TWImageViewDelegate {
+    func singleTapGesture(view: TWImageView) {
+        delegate?.imageBrowserDidSingleTap(self, page: view.tag)
     }
     
-    // MARK: Data Get
-    /**
-     * 원하는 페이지의 이미지 객체를 얻어온다
-     * @param page 페이지 번호
-     * @return 해당 페이지의 UIImage 반환
-     */
-    public func getImage(page: Int) -> UIImage?{
-        
-        if self.imageObjects.count < 1 {
-            return nil
-        }
-        
-        // TODO: page번호하고 view의 index하고 맞춰야함(배너가 있을때는 다르게 동작 할 가능성이 많음)
-        if page > 0 && page <= self.totalPage {
-            for subview in self.scrollView.subviews {
-                if subview is TWImageView {
-                    let imageView = subview as! TWImageView
-                    return imageView.imageView.image
-                } else {
-                    for image in subview.subviews {
-                        if image is UIImageView {
-                            let imageView = image as! UIImageView
-                            return imageView.image
-                        }
-                    }
-                }
-            }
-        }
-        
-        return nil
+    func doubleTapGesture(view: TWImageView) {
+        delegate?.imageBrowserDidDoubleTap(self, page: view.tag)
     }
-    
-    /**
-     *  전체 페이지의 View 객체를 가져온다
-     *
-     *  @return 해당 페이지의 UIImage 반환
-     */
-    public func getBrowserViewList() -> [UIView] {
-        return self.scrollView.subviews
-    }
-    
-    
-    
 }

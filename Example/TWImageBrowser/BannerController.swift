@@ -68,10 +68,18 @@ class BannerController: UIViewController, TWImageBrowserDelegate, TWImageBrowser
     
     // MARK: - Delegate
     func imageBrowserDidScroll(imageBrowser: TWImageBrowser) {
-        //        log("\(imageBrowser.currentPage) / \(imageBrowser.totalPage)")
+//        log("\(imageBrowser.currentPage) / \(imageBrowser.totalPage)")
     }
     
     func imageBrowserDidEndScrollingAnimation(imageBrowser : TWImageBrowser) {
-        //        log("\(imageBrowser.currentPage) / \(imageBrowser.totalPage)")
+//        log("\(imageBrowser.currentPage) / \(imageBrowser.totalPage)")
+    }
+    
+    func imageBrowserDidSingleTap(imageBrowser: TWImageBrowser, page: Int) {
+        print("imageBrowserDidSingleTap \(page)")
+    }
+    
+    func imageBrowserDidDoubleTap(imageBrowser: TWImageBrowser, page: Int) {
+        print("imageBrowserDidDoubleTap \(page)")
     }
 }
