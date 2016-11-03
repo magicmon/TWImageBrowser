@@ -9,7 +9,7 @@
 import UIKit
 import TWImageBrowser
 
-class NormalController: UIViewController, TWImageBrowserDelegate, TWImageBrowserDataSource {
+class NormalController: UIViewController {
 
     var testViewer : TWImageBrowser!
     var prevButton : UIButton!
@@ -162,7 +162,9 @@ class NormalController: UIViewController, TWImageBrowserDelegate, TWImageBrowser
     }
     
     
-    // MARK: - DataSource
+}
+
+extension NormalController: TWImageBrowserDataSource {
     func backgroundImage(imageBrowser : TWImageBrowser) -> UIImage? {
         return nil
     }
@@ -174,13 +176,22 @@ class NormalController: UIViewController, TWImageBrowserDelegate, TWImageBrowser
     func showDefaultPageIndex(imageBrowser: TWImageBrowser) -> Int {
         return 0
     }
-    
-    // MARK: - Delegate
+}
+
+extension NormalController: TWImageBrowserDelegate {
     func imageBrowserDidScroll(imageBrowser : TWImageBrowser) {
         label.text = "\(imageBrowser.currentPage) / \(imageBrowser.totalPage)"
     }
     
     func imageBrowserDidEndScrollingAnimation(imageBrowser : TWImageBrowser) {
-        //        log("\(imageBrowser.currentPage) / \(imageBrowser.totalPage)")
+//        print("\(imageBrowser.currentPage) / \(imageBrowser.totalPage)")
+    }
+    
+    func imageBrowserDidSingleTap(imageBrowser: TWImageBrowser, page: Int) {
+        print("imageBrowserDidSingleTap \(page)")
+    }
+    
+    func imageBrowserDidDoubleTap(imageBrowser: TWImageBrowser, page: Int) {
+        print("imageBrowserDidDoubleTap \(page)")
     }
 }

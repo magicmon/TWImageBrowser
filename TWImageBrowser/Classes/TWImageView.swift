@@ -2,12 +2,17 @@
 //  TWImageView.swift
 //  TWImageBrowser
 //
-//  Created by Tae Woo Kang on 2016. 5. 26..
+//  Created by magicmon on 2016. 5. 26..
 //  Copyright © 2016 magicmon. All rights reserved.
 //
 
 import UIKit
 import AlamofireImage
+
+protocol TWImageViewDelegate {
+    func singleTapGesture(view: TWImageView)
+    func doubleTapGesture(view: TWImageView)
+}
 
 class TWImageView: UIScrollView {
     
@@ -18,6 +23,8 @@ class TWImageView: UIScrollView {
     var browserType: TWImageBrowserType = .NORMAL
     
     var maximumScale: CGFloat = 3.0
+    
+    var imageDelegate: TWImageViewDelegate?
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -53,25 +60,31 @@ class TWImageView: UIScrollView {
     
     func setupSubviews() {
         // container view
-        self.containerView = UIView(frame: self.bounds)
-        self.containerView.backgroundColor = UIColor.clearColor()
-        self.addSubview(self.containerView)
+        containerView = UIView(frame: self.bounds)
+        containerView.backgroundColor = UIColor.clearColor()
+        addSubview(self.containerView)
         
         // image view
-        self.imageView = UIImageView(frame: self.containerView.bounds)
-        self.containerView.addSubview(self.imageView)
+        imageView = UIImageView(frame: self.containerView.bounds)
+        containerView.addSubview(self.imageView)
         
         // indicator view
-        self.indicator = UIActivityIndicatorView(frame: CGRectMake(0, 0, 50, 50))
-        self.indicator.center = self.containerView.center
-        self.indicator.activityIndicatorViewStyle = .White
-        self.indicator.hidesWhenStopped = true
-        self.containerView.addSubview(self.indicator)
+        indicator = UIActivityIndicatorView(frame: CGRectMake(0, 0, 50, 50))
+        indicator.center = self.containerView.center
+        indicator.activityIndicatorViewStyle = .White
+        indicator.hidesWhenStopped = true
+        containerView.addSubview(self.indicator)
         
         // gesture recognizer
-        let doubleTapRecognizer = UITapGestureRecognizer(target: self, action:#selector(TWImageView.scrollViewDoubleTapped(_:)))
+        let singleTapRecognizer = UITapGestureRecognizer(target: self, action:#selector(scrollViewDidSingleTapped))
+        singleTapRecognizer.numberOfTapsRequired = 1
+        containerView.addGestureRecognizer(singleTapRecognizer)
+        
+        let doubleTapRecognizer = UITapGestureRecognizer(target: self, action:#selector(scrollViewDidDoubleTapped))
         doubleTapRecognizer.numberOfTapsRequired = 2
-        self.containerView.addGestureRecognizer(doubleTapRecognizer)
+        containerView.addGestureRecognizer(doubleTapRecognizer)
+        
+        singleTapRecognizer.requireGestureRecognizerToFail(doubleTapRecognizer)
     }
     
     func setupScrollViewOption() {
@@ -146,18 +159,6 @@ class TWImageView: UIScrollView {
         centerContent()
     }
     
-    // MARK: - GestureRecognizer
-    func scrollViewDoubleTapped(recognizer: UITapGestureRecognizer) {
-        if self.zoomScale > self.minimumZoomScale {
-            self.setZoomScale(self.minimumZoomScale, animated: true)
-        } else if (self.zoomScale < self.maximumZoomScale) {
-            
-            let location = recognizer.locationInView(recognizer.view)
-            var zoomToRect = CGRectMake(0, 0, 50, 50)
-            zoomToRect.origin = CGPointMake(location.x - CGRectGetWidth(zoomToRect) / 2, location.y - CGRectGetHeight(zoomToRect) / 2)
-            self.zoomToRect(zoomToRect, animated: true)
-        }
-    }
     
     // MARK: - Helper
     func getMaxZoomScale() -> CGFloat{
@@ -193,6 +194,27 @@ class TWImageView: UIScrollView {
         left -= frame.origin.x;
         
         self.contentInset = UIEdgeInsetsMake(top, left, top, left);
+    }
+}
+
+// MARK: - GestureRecognizer
+extension TWImageView {
+    func scrollViewDidSingleTapped(recognizer: UITapGestureRecognizer) {
+        imageDelegate?.singleTapGesture(self)
+    }
+    
+    func scrollViewDidDoubleTapped(recognizer: UITapGestureRecognizer) {
+        if self.zoomScale > self.minimumZoomScale {
+            self.setZoomScale(self.minimumZoomScale, animated: true)
+        } else if (self.zoomScale < self.maximumZoomScale) {
+            
+            let location = recognizer.locationInView(recognizer.view)
+            var zoomToRect = CGRectMake(0, 0, 50, 50)
+            zoomToRect.origin = CGPointMake(location.x - CGRectGetWidth(zoomToRect) / 2, location.y - CGRectGetHeight(zoomToRect) / 2)
+            self.zoomToRect(zoomToRect, animated: true)
+        }
+        
+        imageDelegate?.doubleTapGesture(self)
     }
 }
 
