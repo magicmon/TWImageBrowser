@@ -21,6 +21,10 @@ extension TWImageBrowser {
         
         switch self.browserType {
         case .NORMAL :
+            
+            // 이미지가 아직 로드 안된 경우 로드
+            loadImageFromView(toPage)
+            
             // 페이지 범위를 넘어가면 offset을 이동시키지 않음
             if toPage < 1 {
                 return self.currentPage

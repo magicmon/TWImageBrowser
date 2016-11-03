@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AlamofireImage
 
 public protocol TWImageBrowserDataSource {
     func backgroundImage(imageBrowser: TWImageBrowser) -> UIImage?      // 로드 시 사용할 백그라운드 이미지
@@ -23,6 +24,8 @@ public enum TWImageBrowserType: Int {
     case NORMAL
     case BANNER
 }
+
+
 
 public class TWImageBrowser: UIView {
     
@@ -207,32 +210,34 @@ public class TWImageBrowser: UIView {
             // set image View
             for (index, object) in self.imageObjects.enumerate() {
                 
-                if object is UIView {
-                    let view = object as! UIView
+                // 일반 뷰 일 경우
+                if let view = object as? UIView {
                     view.frame = frameForView(index)
                     view.layoutSubviews()
-                    view.tag = self.browserType == .NORMAL ? index + 1 : index
+                    view.tag = browserType == .NORMAL ? index + 1 : index
                     
                     self.scrollView.addSubview(object as! UIView)
-                }
-                else {
-                    let imageView: TWImageView = TWImageView(frame: frameForView(index))
-                    imageView.browserType = self.browserType
-                    imageView.setupImage(object)
-                    imageView.refreshLayout()
+                } else {
+                    // 이미지나 URL이 넘어왔을 경우
+                    let imageView = TWImageView(frame: frameForView(index), browserType: browserType)
                     
                     switch self.browserType {
                     case .NORMAL:
+                        // 처음 로드 시 해당 페이지의 이미지만 로드
+                        if index == defaultPageIndex || defaultPageIndex - 1 == index || defaultPageIndex + 1 == index {
+                            imageView.setupImage(object)
+                        }
+                        
                         imageView.tag = index + 1
                         imageView.maximumZoomScale = self.maximumScale
                         imageView.imageView.contentMode = .ScaleAspectFit
-                        break
                     case .BANNER:
+                        imageView.setupImage(object)
+                        
                         imageView.tag = index
                         imageView.maximumZoomScale = 1.0
                         imageView.minimumZoomScale = 1.0
                         imageView.imageView.contentMode = .ScaleToFill
-                        break
                     }
                     
                     self.scrollView.addSubview(imageView)
@@ -255,10 +260,9 @@ public class TWImageBrowser: UIView {
             
             self.imageObjects = [backgroundImage]
             
-            let imageView: TWImageView = TWImageView(frame: frameForView(0))
+            let imageView = TWImageView(frame: frameForView(0), browserType: browserType)
             imageView.tag = 1
             imageView.setupImage(backgroundImage)
-            imageView.refreshLayout()
             
             self.scrollView.addSubview(imageView)
             
@@ -379,5 +383,7 @@ public class TWImageBrowser: UIView {
     public func getBrowserViewList() -> [UIView] {
         return self.scrollView.subviews
     }
+    
+    
     
 }

@@ -60,9 +60,12 @@ extension TWImageBrowser: UIScrollViewDelegate {
     }
     
     public func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
+        
+        
         switch self.browserType {
         case .NORMAL:
-            break
+            // 이미지가 아직 로드 안된 경우 로드
+            loadImageFromView(self.scrollView.currentPage)
         case .BANNER:
             if self.scrollView.currentPage == 1 {
                 self.scrollView.setContentOffset(CGPointMake(self.scrollView.frame.width * CGFloat(self.totalPage), 0), animated: false)

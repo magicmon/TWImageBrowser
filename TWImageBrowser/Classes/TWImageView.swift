@@ -13,9 +13,9 @@ class TWImageView: UIScrollView {
     
     var containerView : UIView!
     var imageView : UIImageView!
-    var indicator : UIActivityIndicatorView!
-    var minSize : CGSize = CGSizeZero
-    var browserType : TWImageBrowserType = .NORMAL
+    var indicator: UIActivityIndicatorView!
+    var minSize: CGSize = CGSizeZero
+    var browserType: TWImageBrowserType = .NORMAL
     
     var maximumScale: CGFloat = 3.0
     
@@ -25,6 +25,21 @@ class TWImageView: UIScrollView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
+        // view 구성
+        setupSubviews()
+        
+        // scroll view에 대한 조건 설정
+        setupScrollViewOption()
+        
+        // 화면 갱신
+        refreshLayout()
+    }
+    
+    init(frame: CGRect, browserType: TWImageBrowserType) {
+        super.init(frame: frame)
+        
+        self.browserType = browserType
         
         // view 구성
         setupSubviews()
@@ -75,59 +90,25 @@ class TWImageView: UIScrollView {
             // 이미지 삽입
             self.imageView.image = loadImage
             
+            self.refreshLayout()
         } else if let urlString = image as? String {
             
             if urlString.hasPrefix("http://") || urlString.hasPrefix("https://") {
                 // url 링크가 넘어온 경우
 
-//                let imageQueue = dispatch_queue_create("TWImageLoader", nil)
-//                
-//                dispatch_async(imageQueue, { () -> Void in
-//                    self.indicator.startAnimating()
-//                    
-//                    guard let imageURL = NSURL(string: urlString) else {
-//                        return
-//                    }
-//                    
-//                    guard let imageData = NSData(contentsOfURL: imageURL) else {
-//                        return
-//                    }
-//                    
-//                    let image = UIImage(data: imageData)
-//                    
-//                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-//                        
-//                        self.indicator.stopAnimating()
-//                        
-//                        // 다운로드 받은 이미지 추가
-//                        self.imageView.image = image
-//                        
-//                        // 이미지 크기에 따라 maxZomm 재 설정
-//                        self.maximumZoomScale = max(1.0, self.getMaxZoomScale())
-//                        self.minimumZoomScale = 1.0
-//
-//                        // 화면 갱신
-//                        self.refreshLayout()
-//                    })
-//                })
-                
-                guard let imageURL = NSURL(string: urlString) else {
-                    return
-                }
-                
                 self.indicator.startAnimating()
                 
-                self.imageView.af_setImageWithURL(imageURL, runImageTransitionIfCached: false, completion: { (response) in
-                    
+                TWImageCache.sharedInstance().cacheImageWithURL(urlString, completion: { (image) in
                     self.indicator.stopAnimating()
                     
-                    self.imageView.image = response.result.value
+                    self.imageView.image = image
                     
                     self.maximumZoomScale = self.maximumScale
                     self.minimumZoomScale = 1.0
-
+                    
                     self.refreshLayout()
                 })
+                
             } else {
                 let components = urlString.componentsSeparatedByString("/")
                 
@@ -139,6 +120,8 @@ class TWImageView: UIScrollView {
                     // 파일 이름만 넘어온 경우
                     self.imageView.image = UIImage(named: urlString)
                 }
+                
+                self.refreshLayout()
             }
         }
     }
