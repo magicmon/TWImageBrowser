@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AlamofireImage
 
 public protocol TWImageBrowserDataSource {
     func backgroundImage(imageBrowser: TWImageBrowser) -> UIImage?      // 로드 시 사용할 백그라운드 이미지
@@ -24,15 +25,17 @@ public enum TWImageBrowserType: Int {
     case BANNER
 }
 
-public class TWImageBrowser: UIView, UIScrollViewDelegate {
+
+
+public class TWImageBrowser: UIView {
     
-    private var autoScrollFunctionName: Selector = #selector(TWImageBrowser.autoScrollingView) // 자동 스크롤 시 불러올 함수이름 설정
+    internal var autoScrollFunctionName: Selector = #selector(TWImageBrowser.autoScrollingView) // 자동 스크롤 시 불러올 함수이름 설정
     
-    private var scrollView: UIScrollView!
-    private var pageControl: UIPageControl!
+    internal var scrollView: UIScrollView!
+    internal var pageControl: UIPageControl!
     
-    private var lastPage: Int = 1                           // 마지막으로 접근한 페이지 지정
-    private var isOrientation: Bool = false                 // 화면 회전중인지 체크
+    internal var lastPage: Int = 1                          // 마지막으로 접근한 페이지 지정
+    internal var isOrientation: Bool = false                // 화면 회전중인지 체크
     
     public var dataSource: TWImageBrowserDataSource?        // 브라우저 실행 시 data source 설정
     public var delegate: TWImageBrowserDelegate?            // 페이지 이동 등에 대한 delegate
@@ -43,14 +46,19 @@ public class TWImageBrowser: UIView, UIScrollViewDelegate {
     
     public var hiddenPageControl: Bool = false              // 하단에 pageControl이 나올지 말지 여부 설정
     
-    private var viewPadding: CGFloat = 0.0                  // 각 이미지뷰 사이의 간격
-    public var viewInset: CGFloat {
-        get {
-            return self.viewPadding
+    public var maximumScale: CGFloat = 3.0 {                // 최대 zoom scale
+        didSet {
+            if maximumScale < 1.0 {
+                maximumScale = 1
+            }
         }
-        
-        set(imageInset) {
-            self.viewPadding = (imageInset < 0.0) ? 0.0 : imageInset
+    }
+    
+    public var viewPadding: CGFloat = 0.0 {                 // 각 이미지뷰 사이의 간격
+        didSet {
+            if viewPadding < 0.0 {
+                viewPadding = 0
+            }
         }
     }
     
@@ -160,8 +168,9 @@ public class TWImageBrowser: UIView, UIScrollViewDelegate {
                 // 마지막 이미지를 제일 첫번째에 위치하도록 한다
                 if let lastObject = objectList.last {
                     if objectList.last is UIView {
-                        let lastView = lastObject as! UIView
-                        objectList.insert(lastView.copyView(), atIndex: 0)
+                        if let lastView = lastObject as? UIView, let copyView = lastView.copyView() {
+                            objectList.insert(copyView, atIndex: 0)
+                        }
                     } else {
                         objectList.insert(lastObject, atIndex: 0)
                     }
@@ -169,8 +178,9 @@ public class TWImageBrowser: UIView, UIScrollViewDelegate {
                 
                 // 첫번째 이미지를 제일 뒤에 위치하도록 한다.
                 if objectList[1] is UIView {
-                    let firstView = objectList[1] as! UIView
-                    objectList.append(firstView.copyView())
+                    if let firstView = objectList[1] as? UIView, let copyView = firstView.copyView() {
+                        objectList.append(copyView)
+                    }
                 } else {
                     objectList.append(objectList[1])
                 }
@@ -200,31 +210,34 @@ public class TWImageBrowser: UIView, UIScrollViewDelegate {
             // set image View
             for (index, object) in self.imageObjects.enumerate() {
                 
-                if object is UIView {
-                    let view = object as! UIView
+                // 일반 뷰 일 경우
+                if let view = object as? UIView {
                     view.frame = frameForView(index)
                     view.layoutSubviews()
-                    view.tag = self.browserType == .NORMAL ? index + 1 : index
+                    view.tag = browserType == .NORMAL ? index + 1 : index
                     
                     self.scrollView.addSubview(object as! UIView)
-                }
-                else {
-                    let imageView: TWImageView = TWImageView(frame: frameForView(index), image: object)
-                    imageView.browserType = self.browserType
-                    imageView.refreshLayout()
+                } else {
+                    // 이미지나 URL이 넘어왔을 경우
+                    let imageView = TWImageView(frame: frameForView(index), browserType: browserType)
                     
                     switch self.browserType {
                     case .NORMAL:
+                        // 처음 로드 시 해당 페이지의 이미지만 로드
+                        if index == defaultPageIndex || defaultPageIndex - 1 == index || defaultPageIndex + 1 == index {
+                            imageView.setupImage(object)
+                        }
+                        
                         imageView.tag = index + 1
-                        imageView.maximumZoomScale = imageView.getMaxZoomScale()
+                        imageView.maximumZoomScale = self.maximumScale
                         imageView.imageView.contentMode = .ScaleAspectFit
-                        break
                     case .BANNER:
+                        imageView.setupImage(object)
+                        
                         imageView.tag = index
                         imageView.maximumZoomScale = 1.0
                         imageView.minimumZoomScale = 1.0
                         imageView.imageView.contentMode = .ScaleToFill
-                        break
                     }
                     
                     self.scrollView.addSubview(imageView)
@@ -247,9 +260,9 @@ public class TWImageBrowser: UIView, UIScrollViewDelegate {
             
             self.imageObjects = [backgroundImage]
             
-            let imageView: TWImageView = TWImageView(frame: frameForView(0), image: backgroundImage)
+            let imageView = TWImageView(frame: frameForView(0), browserType: browserType)
             imageView.tag = 1
-            imageView.refreshLayout()
+            imageView.setupImage(backgroundImage)
             
             self.scrollView.addSubview(imageView)
             
@@ -315,98 +328,6 @@ public class TWImageBrowser: UIView, UIScrollViewDelegate {
         return viewFrame
     }
     
-    // MARK: - Page
-    /**
-     * 특정 페이지로 이동
-     *
-     * @param page 페이지 번호
-     * @param animated 페이지 이동 시 에니메이션 효과를 줄지 결정. default는 true
-     * @return 이동한 페이지의 번호를 반환
-     */
-    public func movePage(toPage: Int, animated: Bool = true) -> Int{
-        
-        switch self.browserType {
-        case .NORMAL :
-            // 페이지 범위를 넘어가면 offset을 이동시키지 않음
-            if toPage < 1 {
-                return self.currentPage
-            } else if toPage > self.totalPage {
-                return self.currentPage
-            }
-            
-            self.scrollView.setContentOffset(CGPointMake(self.scrollView.frame.width * CGFloat(toPage - 1), 0), animated: animated)
-            
-            return toPage
-            
-        case .BANNER:
-            self.scrollView.setContentOffset(CGPointMake(self.scrollView.frame.width * CGFloat(toPage), 0), animated: animated)
-            
-            if toPage > self.totalPage {
-                // 마지막 페이지에서 첫페이지로 넘어가는 경우
-                return 1
-            } else if toPage < 1 {
-                return self.totalPage
-            } else {
-                return toPage
-            }
-        }
-    }
-    
-    /**
-     * 다음 페이지로 이동
-     *
-     * @param animated 페이지 이동 시 에니메이션 효과를 줄지 결정. default는 true
-     * @return 이동한 페이지의 번호를 반환
-     */
-    public func nextPage(animated: Bool = true)  -> Int{
-        return movePage(self.currentPage + 1, animated: animated)
-    }
-    
-    /**
-     * 이전 페이지로 이동
-     *
-     * @param animated 페이지 이동 시 에니메이션 효과를 줄지 결정. default는 true
-     * @return 이동한 페이지의 번호를 반환
-     */
-    public func prevPage(animated: Bool = true)  -> Int{
-        return movePage(self.currentPage - 1, animated: animated)
-    }
-    
-    /**
-     * 스크롤뷰의 현재 페이지
-     *
-     * @return 현재 바라보고 있는 페이지 위치(1페이지부터 시작)
-     */
-    public var currentPage: Int {
-        switch self.browserType {
-        case .NORMAL:
-            return self.scrollView.currentPage
-        case .BANNER:
-            if self.scrollView.currentPage == 1 {
-                // last page
-                return self.imageObjects.count - 2
-            }
-            else if self.scrollView.currentPage == self.imageObjects.count {
-                // first page
-                return  1
-            } else {
-                return  self.scrollView.currentPage - 1
-            }
-        }
-    }
-    
-    /**
-     * 스크롤뷰의 전체 페이지
-     * @return 전체 페이지 개수 반환
-     */
-    public var totalPage: Int {
-        switch self.browserType {
-        case .NORMAL:
-            return self.scrollView.totalPage
-        case .BANNER:
-            return self.scrollView.totalPage - 2
-        }
-    }
     
     func autoScrollingView() {
         NSObject.cancelPreviousPerformRequestsWithTarget(self, selector: autoScrollFunctionName , object: nil)
@@ -463,79 +384,6 @@ public class TWImageBrowser: UIView, UIScrollViewDelegate {
         return self.scrollView.subviews
     }
     
-    // MARK: - UIScrollView Delegate
-    public func scrollViewDidScroll(scrollView: UIScrollView) {
-        
-        // pageControl의 위치 이동
-        self.pageControl.currentPage = self.currentPage - 1
-        
-        // 스크롤 발생
-        self.delegate?.imageBrowserDidScroll(self)
-    }
     
-    public func scrollViewWillBeginDragging(scrollView: UIScrollView) {
-        // 스크롤 시작 전 마지막으로 보고 있던 페이지 저장
-        lastPage = self.currentPage
-        
-        // 자동 스크롤 중이던 항목을 멈춤
-        NSObject.cancelPreviousPerformRequestsWithTarget(self, selector:autoScrollFunctionName , object: nil)
-    }
     
-    public func scrollViewWillEndDragging(scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        // 사용자에 의한 스크롤 종료
-    }
-    
-    public func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        
-    }
-    
-    public func scrollViewWillBeginDecelerating(scrollView: UIScrollView) {
-        // 스크롤 멈추기 시작
-    }
-    
-    public func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
-        
-        // stop scroll
-        
-        // 자동 스크롤 재 실행
-        if self.browserType == .BANNER && self.autoPlayTimeInterval > 0 {
-            self.performSelector(autoScrollFunctionName, withObject: nil, afterDelay:self.autoPlayTimeInterval)
-        }
-        
-        scrollViewDidEndScrollingAnimation(scrollView)
-    }
-    
-    public func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
-        switch self.browserType {
-        case .NORMAL:
-            break
-        case .BANNER:
-            if self.scrollView.currentPage == 1 {
-                self.scrollView.setContentOffset(CGPointMake(self.scrollView.frame.width * CGFloat(self.totalPage), 0), animated: false)
-            }
-            else if self.scrollView.currentPage == self.imageObjects.count {
-                self.scrollView.setContentOffset(CGPointMake(self.scrollView.frame.width, 0), animated: false)
-            }
-            break
-        }
-        
-        self.delegate?.imageBrowserDidEndScrollingAnimation(self)
-    }
-}
-
-extension UIScrollView {
-    var currentPage:Int{
-        return Int((self.contentOffset.x + (0.5 * self.frame.size.width)) / self.frame.width) + 1
-    }
-    
-    var totalPage:Int {
-        return Int(self.contentSize.width / self.frame.width)
-    }
-}
-
-extension UIView {
-    public func copyView() -> AnyObject
-    {
-        return NSKeyedUnarchiver.unarchiveObjectWithData(NSKeyedArchiver.archivedDataWithRootObject(self))!
-    }
 }

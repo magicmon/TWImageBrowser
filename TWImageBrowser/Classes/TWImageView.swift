@@ -7,14 +7,17 @@
 //
 
 import UIKit
+import AlamofireImage
 
-class TWImageView: UIScrollView, UIScrollViewDelegate {
+class TWImageView: UIScrollView {
     
     var containerView : UIView!
     var imageView : UIImageView!
-    var indicator : UIActivityIndicatorView!
-    var minSize : CGSize = CGSizeZero
-    var browserType : TWImageBrowserType = .NORMAL
+    var indicator: UIActivityIndicatorView!
+    var minSize: CGSize = CGSizeZero
+    var browserType: TWImageBrowserType = .NORMAL
+    
+    var maximumScale: CGFloat = 3.0
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -33,14 +36,13 @@ class TWImageView: UIScrollView, UIScrollViewDelegate {
         refreshLayout()
     }
     
-    init(frame: CGRect, image: AnyObject?) {
+    init(frame: CGRect, browserType: TWImageBrowserType) {
         super.init(frame: frame)
+        
+        self.browserType = browserType
         
         // view 구성
         setupSubviews()
-        
-        // 이미지 셋팅
-        setupImage(image)
         
         // scroll view에 대한 조건 설정
         setupScrollViewOption()
@@ -48,7 +50,6 @@ class TWImageView: UIScrollView, UIScrollViewDelegate {
         // 화면 갱신
         refreshLayout()
     }
-    
     
     func setupSubviews() {
         // container view
@@ -77,7 +78,7 @@ class TWImageView: UIScrollView, UIScrollViewDelegate {
         self.delegate = self
         self.showsHorizontalScrollIndicator = false
         self.showsVerticalScrollIndicator = false
-        self.maximumZoomScale = max(1.0, getMaxZoomScale())
+        self.maximumZoomScale = maximumScale
         self.minimumZoomScale = 1.0
         self.backgroundColor = UIColor.clearColor()
         self.scrollsToTop = false
@@ -89,40 +90,23 @@ class TWImageView: UIScrollView, UIScrollViewDelegate {
             // 이미지 삽입
             self.imageView.image = loadImage
             
+            self.refreshLayout()
         } else if let urlString = image as? String {
             
             if urlString.hasPrefix("http://") || urlString.hasPrefix("https://") {
                 // url 링크가 넘어온 경우
+
+                self.indicator.startAnimating()
                 
-                let imageQueue = dispatch_queue_create("TWImageLoader", nil)
-                
-                dispatch_async(imageQueue, { () -> Void in
-                    self.indicator.startAnimating()
+                TWImageCache.sharedInstance().cacheImageWithURL(urlString, completion: { (image) in
+                    self.indicator.stopAnimating()
                     
-                    guard let imageURL = NSURL(string: urlString) else {
-                        return
-                    }
+                    self.imageView.image = image
                     
-                    guard let imageData = NSData(contentsOfURL: imageURL) else {
-                        return
-                    }
+                    self.maximumZoomScale = self.maximumScale
+                    self.minimumZoomScale = 1.0
                     
-                    let image = UIImage(data: imageData)
-                    
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        
-                        self.indicator.stopAnimating()
-                        
-                        // 다운로드 받은 이미지 추가
-                        self.imageView.image = image
-                        
-                        // 이미지 크기에 따라 maxZomm 재 설정
-                        self.maximumZoomScale = max(1.0, self.getMaxZoomScale())
-                        self.minimumZoomScale = 1.0
-                        
-                        // 화면 갱신
-                        self.refreshLayout()
-                    })
+                    self.refreshLayout()
                 })
                 
             } else {
@@ -136,6 +120,8 @@ class TWImageView: UIScrollView, UIScrollViewDelegate {
                     // 파일 이름만 넘어온 경우
                     self.imageView.image = UIImage(named: urlString)
                 }
+                
+                self.refreshLayout()
             }
         }
     }
@@ -168,18 +154,9 @@ class TWImageView: UIScrollView, UIScrollViewDelegate {
             
             let location = recognizer.locationInView(recognizer.view)
             var zoomToRect = CGRectMake(0, 0, 50, 50)
-            zoomToRect.origin = CGPointMake(location.x - CGRectGetWidth(zoomToRect)/2, location.y - CGRectGetHeight(zoomToRect)/2)
+            zoomToRect.origin = CGPointMake(location.x - CGRectGetWidth(zoomToRect) / 2, location.y - CGRectGetHeight(zoomToRect) / 2)
             self.zoomToRect(zoomToRect, animated: true)
         }
-    }
-    
-    // MARK: - UIScrollViewDelegate
-    func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
-        return self.containerView
-    }
-    
-    func scrollViewDidZoom(scrollView: UIScrollView) {
-        centerContent()
     }
     
     // MARK: - Helper
@@ -189,35 +166,44 @@ class TWImageView: UIScrollView, UIScrollViewDelegate {
             return 1.0
         }
         
-        let imageSize = self.imageView.image?.size
-        
-        if imageSize == nil {
+        guard let imageSize = self.imageView.image?.size else {
             return 1.0
         }
         
-        let imagePresentationSize : CGSize = self.imageView.contentSize()
+        let imagePresentationSize: CGSize = self.imageView.contentSize()
         
-        return max(imageSize!.height / imagePresentationSize.height, imageSize!.width / imagePresentationSize.width)
+        return max(imageSize.height / imagePresentationSize.height, imageSize.width / imagePresentationSize.width)
     }
     
     func centerContent() {
         
         let frame = self.containerView!.frame
         
-        var top : CGFloat = 0
-        var left : CGFloat = 0
+        var top: CGFloat = 0
+        var left: CGFloat = 0
         
         if (self.contentSize.width < self.bounds.size.width) {
-            left = (self.bounds.size.width - self.contentSize.width) * 0.5;
+            left = (self.bounds.size.width - self.contentSize.width) * 0.5
         }
         if (self.contentSize.height < self.bounds.size.height) {
-            top = (self.bounds.size.height - self.contentSize.height) * 0.5;
+            top = (self.bounds.size.height - self.contentSize.height) * 0.5
         }
         
         top -= frame.origin.y;
         left -= frame.origin.x;
         
         self.contentInset = UIEdgeInsetsMake(top, left, top, left);
+    }
+}
+
+// MARK: - UIScrollViewDelegate
+extension TWImageView: UIScrollViewDelegate {
+    func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
+        return self.containerView
+    }
+    
+    func scrollViewDidZoom(scrollView: UIScrollView) {
+        centerContent()
     }
 }
 

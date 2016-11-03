@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'TWImageBrowser'
-  s.version          = '1.1.0'
+  s.version          = '1.1.1'
   s.summary          = 'Simple image browser or banner.'
 
 # This description is used to generate tags and improve search results.
@@ -30,4 +30,5 @@ Pod::Spec.new do |s|
 
   s.source_files = 'TWImageBrowser/Classes/**/*'
 
+  s.dependency 'AlamofireImage', '~> 2.0'
 end
