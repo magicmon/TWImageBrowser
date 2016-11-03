@@ -31,8 +31,8 @@ public class TWImageBrowser: UIView {
     internal var scrollView: UIScrollView!
     internal var pageControl: UIPageControl!
     
-    internal var lastPage: Int = 1                           // 마지막으로 접근한 페이지 지정
-    internal var isOrientation: Bool = false                 // 화면 회전중인지 체크
+    internal var lastPage: Int = 1                          // 마지막으로 접근한 페이지 지정
+    internal var isOrientation: Bool = false                // 화면 회전중인지 체크
     
     public var dataSource: TWImageBrowserDataSource?        // 브라우저 실행 시 data source 설정
     public var delegate: TWImageBrowserDelegate?            // 페이지 이동 등에 대한 delegate
@@ -43,15 +43,19 @@ public class TWImageBrowser: UIView {
     
     public var hiddenPageControl: Bool = false              // 하단에 pageControl이 나올지 말지 여부 설정
     
-    internal var viewPadding: CGFloat = 0.0                  // 각 이미지뷰 사이의 간격
-    
-    public var viewInset: CGFloat {
-        get {
-            return self.viewPadding
+    public var maximumScale: CGFloat = 3.0 {                // 최대 zoom scale
+        didSet {
+            if maximumScale < 1.0 {
+                maximumScale = 1
+            }
         }
-        
-        set(imageInset) {
-            self.viewPadding = (imageInset < 0.0) ? 0.0 : imageInset
+    }
+    
+    public var viewPadding: CGFloat = 0.0 {                 // 각 이미지뷰 사이의 간격
+        didSet {
+            if viewPadding < 0.0 {
+                viewPadding = 0
+            }
         }
     }
     
@@ -212,14 +216,15 @@ public class TWImageBrowser: UIView {
                     self.scrollView.addSubview(object as! UIView)
                 }
                 else {
-                    let imageView: TWImageView = TWImageView(frame: frameForView(index), image: object)
+                    let imageView: TWImageView = TWImageView(frame: frameForView(index))
                     imageView.browserType = self.browserType
+                    imageView.setupImage(object)
                     imageView.refreshLayout()
                     
                     switch self.browserType {
                     case .NORMAL:
                         imageView.tag = index + 1
-                        imageView.maximumZoomScale = imageView.getMaxZoomScale()
+                        imageView.maximumZoomScale = self.maximumScale
                         imageView.imageView.contentMode = .ScaleAspectFit
                         break
                     case .BANNER:
@@ -250,8 +255,9 @@ public class TWImageBrowser: UIView {
             
             self.imageObjects = [backgroundImage]
             
-            let imageView: TWImageView = TWImageView(frame: frameForView(0), image: backgroundImage)
+            let imageView: TWImageView = TWImageView(frame: frameForView(0))
             imageView.tag = 1
+            imageView.setupImage(backgroundImage)
             imageView.refreshLayout()
             
             self.scrollView.addSubview(imageView)

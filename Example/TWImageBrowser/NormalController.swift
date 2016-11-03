@@ -23,7 +23,7 @@ class NormalController: UIViewController, TWImageBrowserDelegate, TWImageBrowser
         // Do any additional setup after loading the view, typically from a nib.
         
         testViewer = TWImageBrowser(frame: self.view.bounds)
-        testViewer.viewInset = 10.0
+        testViewer.viewPadding = 10.0
         testViewer.browserType = .NORMAL
         testViewer.delegate = self
         testViewer.dataSource = self
@@ -172,7 +172,7 @@ class NormalController: UIViewController, TWImageBrowserDelegate, TWImageBrowser
     }
     
     func showDefaultPageIndex(imageBrowser: TWImageBrowser) -> Int {
-        return 4
+        return 0
     }
     
     // MARK: - Delegate
