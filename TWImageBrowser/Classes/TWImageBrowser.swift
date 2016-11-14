@@ -233,6 +233,7 @@ public class TWImageBrowser: UIView {
                         
                         imageView.tag = index + 1
                         imageView.maximumZoomScale = self.maximumScale
+                        imageView.imageContentMode = .ScaleAspectFit
                         imageView.imageView.contentMode = .ScaleAspectFit
                     case .BANNER:
                         imageView.setupImage(object)
@@ -240,6 +241,7 @@ public class TWImageBrowser: UIView {
                         imageView.tag = index
                         imageView.maximumZoomScale = 1.0
                         imageView.minimumZoomScale = 1.0
+                        imageView.imageContentMode = .ScaleToFill
                         imageView.imageView.contentMode = .ScaleToFill
                     }
                     

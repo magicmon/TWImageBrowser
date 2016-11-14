@@ -18,8 +18,11 @@ class TWImageView: UIScrollView {
     
     var containerView : UIView!
     var imageView : UIImageView!
+    var imageContentMode: UIViewContentMode = .ScaleAspectFit
+    
     var indicator: UIActivityIndicatorView!
     var minSize: CGSize = CGSizeZero
+    
     var browserType: TWImageBrowserType = .NORMAL
     
     var maximumScale: CGFloat = 3.0
@@ -150,10 +153,12 @@ class TWImageView: UIScrollView {
         
         self.containerView.frame = CGRectMake(0, 0, imageSize.width, imageSize.height)
         self.imageView.center = CGPointMake(imageSize.width / 2, imageSize.height / 2)
+        self.imageView.contentMode = imageContentMode
         
         self.contentSize = imageSize
         self.minSize = imageSize
         self.indicator.center = self.containerView.center
+        
         
         // Center containerView by set insets
         centerContent()
