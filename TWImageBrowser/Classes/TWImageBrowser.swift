@@ -9,13 +9,13 @@
 import UIKit
 import AlamofireImage
 
-public protocol TWImageBrowserDataSource {
+public protocol TWImageBrowserDataSource: class {
     func backgroundImage(imageBrowser: TWImageBrowser) -> UIImage?      // 로드 시 사용할 백그라운드 이미지
     func loadObjects(imageBrowser: TWImageBrowser) -> [AnyObject]?      // 로드 할 이미지
     func showDefaultPageIndex(imageBrowser: TWImageBrowser) -> Int      // 제일 처음에 보여줄 이미지의 페이지 번호
 }
 
-public protocol TWImageBrowserDelegate {
+public protocol TWImageBrowserDelegate: class {
     func imageBrowserDidScroll(imageBrowser: TWImageBrowser)
     func imageBrowserDidEndScrollingAnimation(imageBrowser: TWImageBrowser)
     func imageBrowserDidSingleTap(imageBrowser: TWImageBrowser, page: Int)
@@ -39,8 +39,8 @@ public class TWImageBrowser: UIView {
     internal var lastPage: Int = 1                          // 마지막으로 접근한 페이지 지정
     internal var isOrientation: Bool = false                // 화면 회전중인지 체크
     
-    public var dataSource: TWImageBrowserDataSource?        // 브라우저 실행 시 data source 설정
-    public var delegate: TWImageBrowserDelegate?            // 페이지 이동 등에 대한 delegate
+    public weak var dataSource: TWImageBrowserDataSource?   // 브라우저 실행 시 data source 설정
+    public weak var delegate: TWImageBrowserDelegate?       // 페이지 이동 등에 대한 delegate
     
     public var imageObjects: [AnyObject] = []               // 이미지를 보관해두는 배열
     public var browserType: TWImageBrowserType = .NORMAL    // 해당 브라우저 타입

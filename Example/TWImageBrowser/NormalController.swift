@@ -160,8 +160,6 @@ class NormalController: UIViewController {
     func nextButtonClicked() {
         testViewer.nextPage(true)
     }
-    
-    
 }
 
 extension NormalController: TWImageBrowserDataSource {
