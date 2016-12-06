@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0FE2AD411DF6577D00303290 /* GIFViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FE2AD401DF6577D00303290 /* GIFViewController.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
@@ -32,6 +33,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0FE2AD401DF6577D00303290 /* GIFViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIFViewController.swift; sourceTree = "<group>"; };
 		14BB9967B93D609EA449F931 /* TWImageBrowser.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = TWImageBrowser.podspec; path = ../TWImageBrowser.podspec; sourceTree = "<group>"; };
 		2D5CF083AECE25D869F8F91C /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		4249E14A7140C149B490B329 /* Pods-TWImageBrowser_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TWImageBrowser_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-TWImageBrowser_Tests/Pods-TWImageBrowser_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -82,7 +84,6 @@
 			children = (
 				607FACF51AFB993E008FA782 /* Podspec Metadata */,
 				607FACD21AFB9204008FA782 /* Example for TWImageBrowser */,
-				607FACE81AFB9204008FA782 /* Tests */,
 				607FACD11AFB9204008FA782 /* Products */,
 				B2D93480505216741A18B0B7 /* Pods */,
 				D53C1004D3003E035FBF403B /* Frameworks */,
@@ -104,11 +105,13 @@
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
 				E12A30641CF699E700BA58A8 /* NormalController.swift */,
+				0FE2AD401DF6577D00303290 /* GIFViewController.swift */,
 				E12A30661CF699F100BA58A8 /* BannerController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
+				607FACE81AFB9204008FA782 /* Tests */,
 			);
 			name = "Example for TWImageBrowser";
 			path = TWImageBrowser;
@@ -130,7 +133,8 @@
 				607FACEB1AFB9204008FA782 /* Tests.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
-			path = Tests;
+			name = Tests;
+			path = ../Tests;
 			sourceTree = "<group>";
 		};
 		607FACE91AFB9204008FA782 /* Supporting Files */ = {
@@ -373,6 +377,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0FE2AD411DF6577D00303290 /* GIFViewController.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
 				E12A30651CF699E700BA58A8 /* NormalController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,

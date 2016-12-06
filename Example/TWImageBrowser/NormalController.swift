@@ -28,7 +28,7 @@ class NormalController: UIViewController {
         testViewer.delegate = self
         testViewer.dataSource = self
         testViewer.backgroundColor = UIColor.blackColor()
-        self.automaticallyAdjustsScrollViewInsets = false   // 필수 지정
+        self.automaticallyAdjustsScrollViewInsets = false   // // must
         view.addSubview(testViewer)
         
         setImageList()
@@ -96,17 +96,6 @@ class NormalController: UIViewController {
         imageList.append("https://pixabay.com/static/uploads/photo/2016/08/15/14/36/lavender-field-1595587_1280.jpg")
         imageList.append("https://pixabay.com/static/uploads/photo/2015/11/26/22/28/girl-1064667_1280.jpg")
         imageList.append("https://pixabay.com/static/uploads/photo/2016/07/14/13/35/matterhorn-1516734_1280.jpg")
-        
-//        imageList.append(" ")
-//        imageList.append(" ")
-//        imageList.append(" ")
-//        imageList.append(" ")
-//        imageList.append(" ")
-//        imageList.append(" ")
-//        imageList.append(" ")
-//        imageList.append(" ")
-//        imageList.append(" ")
-//        imageList.append(" ")
     }
     
     func setTopButton() {
