@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="qlg-fz-rkb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="qlg-fz-rkb">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
+        <!--View Controller-->
+        <scene sceneID="rPz-al-Jee">
+            <objects>
+                <viewController storyboardIdentifier="GIFViewController" id="Ew8-Cf-6u6" customClass="GIFViewController" customModule="TWImageBrowser_Example" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Yam-Gz-b3u"/>
+                        <viewControllerLayoutGuide type="bottom" id="H7D-yu-HLd"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="r0H-cP-Cjf">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="HDT-eg-VVS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1509" y="912"/>
+        </scene>
         <!--Banner Controller-->
         <scene sceneID="0W2-B2-tf2">
             <objects>
@@ -22,7 +40,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Za2-Px-WQE" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1506" y="1062"/>
+            <point key="canvasLocation" x="1509" y="1563"/>
         </scene>
         <!--Normal Controller-->
         <scene sceneID="ZLV-rN-4dd">
@@ -40,7 +58,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LUJ-K0-qZq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1506" y="372"/>
+            <point key="canvasLocation" x="1509" y="237"/>
         </scene>
         <!--TWImageBrowser-->
         <scene sceneID="ufC-wZ-h7g">

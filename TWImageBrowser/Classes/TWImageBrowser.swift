@@ -295,6 +295,9 @@ public class TWImageBrowser: UIView {
     deinit {
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIApplicationWillChangeStatusBarOrientationNotification, object: nil)
+        
+        imageObjects.removeAll()
+        scrollView?.removeFromSuperview()
     }
     
     func statusBarOrientationWillChange()

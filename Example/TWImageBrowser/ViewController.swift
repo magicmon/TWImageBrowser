@@ -25,7 +25,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return 3
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -41,8 +41,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         switch indexPath.row {
         case 0:
-            cell?.textLabel?.text = "Normal Type"
+            cell?.textLabel?.text = "Normal Type (Image)"
         case 1:
+            cell?.textLabel?.text = "Normal Type (GIF)"
+        case 2:
             cell?.textLabel?.text = "Browser Type"
         default:
             break
@@ -59,8 +61,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             if let controller = self.storyboard?.instantiateViewControllerWithIdentifier("NormalController") {
                 self.navigationController?.pushViewController(controller, animated: true)
             }
-            break
         case 1:
+            if let controller = self.storyboard?.instantiateViewControllerWithIdentifier("GIFViewController") {
+                self.navigationController?.pushViewController(controller, animated: true)
+            }
+        case 2:
             if let controller = self.storyboard?.instantiateViewControllerWithIdentifier("BannerController") {
                 self.navigationController?.pushViewController(controller, animated: true)
             }

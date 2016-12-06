@@ -9,7 +9,7 @@
 import UIKit
 import AlamofireImage
 
-protocol TWImageViewDelegate {
+protocol TWImageViewDelegate: class {
     func singleTapGesture(view: TWImageView)
     func doubleTapGesture(view: TWImageView)
 }
@@ -27,7 +27,7 @@ class TWImageView: UIScrollView {
     
     var maximumScale: CGFloat = 3.0
     
-    var imageDelegate: TWImageViewDelegate?
+    weak var imageDelegate: TWImageViewDelegate?
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -62,7 +62,8 @@ class TWImageView: UIScrollView {
     }
     
     deinit {
-        imageView.removeFromSuperview()
+        imageView?.image = nil
+        imageView?.removeFromSuperview()
         imageView = nil
     }
     

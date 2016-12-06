@@ -28,11 +28,10 @@ class NormalController: UIViewController {
         testViewer.delegate = self
         testViewer.dataSource = self
         testViewer.backgroundColor = UIColor.blackColor()
-        self.automaticallyAdjustsScrollViewInsets = false   // 필수 지정
+        self.automaticallyAdjustsScrollViewInsets = false   // // must
         view.addSubview(testViewer)
         
-//        setImageList()
-        setGIFList()
+        setImageList()
         
         setTopButton()
     }
@@ -97,47 +96,6 @@ class NormalController: UIViewController {
         imageList.append("https://pixabay.com/static/uploads/photo/2016/08/15/14/36/lavender-field-1595587_1280.jpg")
         imageList.append("https://pixabay.com/static/uploads/photo/2015/11/26/22/28/girl-1064667_1280.jpg")
         imageList.append("https://pixabay.com/static/uploads/photo/2016/07/14/13/35/matterhorn-1516734_1280.jpg")
-        
-//        imageList.append(" ")
-//        imageList.append(" ")
-//        imageList.append(" ")
-//        imageList.append(" ")
-//        imageList.append(" ")
-//        imageList.append(" ")
-//        imageList.append(" ")
-//        imageList.append(" ")
-//        imageList.append(" ")
-//        imageList.append(" ")
-    }
-    
-    func setGIFList() {
-        // 1
-        imageList.append("http://i.giphy.com/l41YeojZ8G5G9cVZC.gif")
-        imageList.append("http://i.giphy.com/l41YlQSaTWPkYQx8I.gif")
-        imageList.append("http://i.giphy.com/3oEjHXHXkLmFLqRZ2U.gif")
-        imageList.append("http://i.giphy.com/3otPoPmNBUk02YKdjy.gif")
-        imageList.append("http://i.giphy.com/D1HxWh7uNdF4Y.gif")
-        
-        // 2
-        imageList.append("http://i.giphy.com/3o7TKuWAyiu6tICQYU.gif")
-        imageList.append("http://i.giphy.com/3oz8xJkty91GlgYEg0.gif")
-        imageList.append("http://i.giphy.com/3o6Ztj26dwdx10reFi.gif")
-        imageList.append("http://i.giphy.com/xT8qBay7zo6A0xOA3S.gif")
-        imageList.append("http://i.giphy.com/jzVYqDzxtapFe.gif")
-        
-        // 3
-        imageList.append("http://i.giphy.com/Ko7HuFTsEv1zW.gif")
-        imageList.append("http://i.giphy.com/64HTMW9A67ROE.gif")
-        imageList.append("http://i.giphy.com/12y5yZn8ZvSlHy.gif")
-        imageList.append("http://i.giphy.com/11RJ3ifvNR5eDe.gif")
-        imageList.append("http://i.giphy.com/xUPOqlYgyI3CQcFEe4.gif")
-
-        // 4
-        imageList.append("http://i.giphy.com/26BRQSNJRFAV5fsGI.gif")
-        imageList.append("http://i.giphy.com/3oAt2bhPYWJl4fg4Ks.gif")
-        imageList.append("http://i.giphy.com/3oD3YOxRfDh6UJpsLC.gif")
-        imageList.append("http://i.giphy.com/l3E6sSkkpkEQdCjYc.gif")
-        imageList.append("http://i.giphy.com/3o6ozxRrKIQgKyKdoc.gif")
     }
     
     func setTopButton() {
