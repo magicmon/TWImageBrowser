@@ -61,6 +61,11 @@ class TWImageView: UIScrollView {
         refreshLayout()
     }
     
+    deinit {
+        imageView.removeFromSuperview()
+        imageView = nil
+    }
+    
     func setupSubviews() {
         // container view
         containerView = UIView(frame: self.bounds)
@@ -103,24 +108,42 @@ class TWImageView: UIScrollView {
     func setupImage(image : AnyObject?) {
         if let loadImage = image as? UIImage {
             
-            // 이미지 삽입
+            // append image
             self.imageView.image = loadImage
             
             self.refreshLayout()
         } else if let urlString = image as? String {
             
             if urlString.hasPrefix("http://") || urlString.hasPrefix("https://") {
-                // url 링크가 넘어온 경우
+                // url
 
                 self.indicator.startAnimating()
                 
                 TWImageCache.sharedInstance().cacheImageWithURL(urlString, completion: { (image) in
+                    
                     self.indicator.stopAnimating()
                     
-                    self.imageView.image = image
-                    
-                    self.maximumZoomScale = self.maximumScale
+                    self.maximumZoomScale = 1.0
                     self.minimumZoomScale = 1.0
+                    
+                    if let image = image {
+                        if let rawData = image.rawData {
+                            var c = [UInt8](count: 1, repeatedValue: 0)
+                            rawData.getBytes(&c, length: 1)
+                            
+                            if c[0] == 0x47 {       // gif
+                                self.imageView.image = UIImage.gifImageWithData(rawData)
+                            } else {
+                                self.imageView.image = image
+                                self.maximumZoomScale = self.maximumScale
+                            }
+                        } else {
+                            self.imageView.image = image
+                            self.maximumZoomScale = self.maximumScale
+                        }
+                    } else {
+                        self.imageView.image = nil
+                    }
                     
                     self.refreshLayout()
                 })
@@ -130,7 +153,7 @@ class TWImageView: UIScrollView {
                 
                 if components.count > 1 {
                     // fullpath가 넘어왔는지 체크
-                    self.imageView.image = UIImage(contentsOfFile:urlString)
+                    self.imageView.image = UIImage(contentsOfFile: urlString)
                 }
                 else {
                     // 파일 이름만 넘어온 경우
