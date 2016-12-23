@@ -10,16 +10,16 @@ import UIKit
 import AlamofireImage
 
 public protocol TWImageBrowserDataSource: class {
-    func backgroundImage(imageBrowser: TWImageBrowser) -> UIImage?      // 로드 시 사용할 백그라운드 이미지
-    func loadObjects(imageBrowser: TWImageBrowser) -> [AnyObject]?      // 로드 할 이미지
-    func showDefaultPageIndex(imageBrowser: TWImageBrowser) -> Int      // 제일 처음에 보여줄 이미지의 페이지 번호
+    func backgroundImage(imageBrowser: TWImageBrowser) -> UIImage?      // default background image
+    func loadObjects(imageBrowser: TWImageBrowser) -> [AnyObject]?      // get image list
+    func showDefaultPageIndex(imageBrowser: TWImageBrowser) -> Int      // The page number to show first.
 }
 
 public protocol TWImageBrowserDelegate: class {
     func imageBrowserDidScroll(imageBrowser: TWImageBrowser)
     func imageBrowserDidEndScrollingAnimation(imageBrowser: TWImageBrowser)
     func imageBrowserDidSingleTap(imageBrowser: TWImageBrowser, page: Int)
-    func imageBrowserDidDoubleTap(imageBrowser: TWImageBrowser, page: Int)
+    func imageBrowserDidDoubleTap(imageBrowser: TWImageBrowser, page: Int, currentZoomScale: CGFloat)
 }
 
 public enum TWImageBrowserType: Int {
@@ -27,28 +27,26 @@ public enum TWImageBrowserType: Int {
     case BANNER
 }
 
-
-
 public class TWImageBrowser: UIView {
     
-    internal var autoScrollFunctionName: Selector = #selector(TWImageBrowser.autoScrollingView) // 자동 스크롤 시 불러올 함수이름 설정
+    internal var autoScrollFunctionName: Selector = #selector(TWImageBrowser.autoScrollingView) // Functions to be called when autoscrolling
     
     internal var scrollView: UIScrollView!
     internal var pageControl: UIPageControl!
     
-    internal var lastPage: Int = 1                          // 마지막으로 접근한 페이지 지정
-    internal var isOrientation: Bool = false                // 화면 회전중인지 체크
+    internal var lastPage: Int = 1                          // Specifying the last move page.
+    internal var isOrientation: Bool = false                // Check if the screen is rotating
     
-    public weak var dataSource: TWImageBrowserDataSource?   // 브라우저 실행 시 data source 설정
-    public weak var delegate: TWImageBrowserDelegate?       // 페이지 이동 등에 대한 delegate
+    public weak var dataSource: TWImageBrowserDataSource?
+    public weak var delegate: TWImageBrowserDelegate?
     
-    public var imageObjects: [AnyObject] = []               // 이미지를 보관해두는 배열
-    public var browserType: TWImageBrowserType = .NORMAL    // 해당 브라우저 타입
-    public var autoPlayTimeInterval: NSTimeInterval = 3.0   // 자동 스크롤링 시간 설정(0.0 이상으로 셋팅할 경우 자동으로 실행)
+    public var imageObjects: [AnyObject] = []               // A list of images
+    public var browserType: TWImageBrowserType = .NORMAL    // Browser Type
+    public var autoPlayTimeInterval: NSTimeInterval = 3.0   // Set auto scrolling time (auto scrolling if higher than 0.0).
     
-    public var hiddenPageControl: Bool = false              // 하단에 pageControl이 나올지 말지 여부 설정
+    public var hiddenPageControl: Bool = false              // Whether pagecontrol is visible in bottom.
     
-    public var maximumScale: CGFloat = 3.0 {                // 최대 zoom scale
+    public var maximumScale: CGFloat = 3.0 {                // maximum zoom scale (If you are loading a gif, set the max scale to 1.0)
         didSet {
             if maximumScale < 1.0 {
                 maximumScale = 1
@@ -56,7 +54,7 @@ public class TWImageBrowser: UIView {
         }
     }
     
-    public var viewPadding: CGFloat = 0.0 {                 // 각 이미지뷰 사이의 간격
+    public var viewPadding: CGFloat = 0.0 {                 // The spacing between each image view
         didSet {
             if viewPadding < 0.0 {
                 viewPadding = 0
@@ -87,13 +85,13 @@ public class TWImageBrowser: UIView {
     public override func layoutSubviews() {
         super.layoutSubviews()
         
-        // 배너이고 auto play가 있으면 자동 넘김 실행
+        // If you have a banner and there is an auto play, you can run it automatically.
         if self.browserType == .BANNER && self.autoPlayTimeInterval > 0 {
             NSObject.cancelPreviousPerformRequestsWithTarget(self, selector:autoScrollFunctionName , object: nil)
             self.performSelector(autoScrollFunctionName, withObject: nil, afterDelay:self.autoPlayTimeInterval)
         }
         
-        // 데이터가 없을 때만 브라우저를 로드 한다.
+        // Load the browser only when there is no data.
         if self.imageObjects.count == 0 {
             loadBrowser()
         }
@@ -130,7 +128,7 @@ public class TWImageBrowser: UIView {
     }
     
     /**
-     * 이미지뷰를 화면에 보여준다
+     * Show image view on screen
      */
     func loadBrowser() {
         
@@ -141,7 +139,7 @@ public class TWImageBrowser: UIView {
                 return
             }
             
-            // 제일 처음 보여줄 화면 번호
+            // Screen number to show first
             var defaultPageIndex = 0
             if let mainPageIndex = self.dataSource?.showDefaultPageIndex(self) {
                 if mainPageIndex < 0 {
@@ -164,7 +162,7 @@ public class TWImageBrowser: UIView {
             case .BANNER:
                 // make image list
                 // 형태는 다음과 같다
-                // 이미지1, 이미지2, 이미지3 이라면 ->>> 이미지3 | 이미지1 | 이미지2 | 이미지3 | 이미지1
+                // image1, image2, image3 이라면 ->>> image3 | image1 | image2 | image3 | image1
                 // 과 같은 형태로 이미지가 구성된다
                 
                 // 마지막 이미지를 제일 첫번째에 위치하도록 한다
@@ -189,7 +187,7 @@ public class TWImageBrowser: UIView {
                 
                 self.imageObjects = objectList
                 
-                // offset 지정(두번째 페이지가 1번이 된다)
+                // Specify offset (second page is 1).
                 offset = CGPointMake((self.scrollView.frame.width * CGFloat(defaultPageIndex + 1)) + ((2 * self.viewPadding) * CGFloat(defaultPageIndex + 1)), 0)
                 
                 // bounces 처리 제거(페이지 이동 시 튀는 현상)
@@ -212,7 +210,6 @@ public class TWImageBrowser: UIView {
             // set image View
             for (index, object) in self.imageObjects.enumerate() {
                 
-                // 일반 뷰 일 경우
                 if let view = object as? UIView {
                     view.frame = frameForView(index)
                     view.layoutSubviews()
@@ -220,13 +217,13 @@ public class TWImageBrowser: UIView {
                     
                     self.scrollView.addSubview(object as! UIView)
                 } else {
-                    // 이미지나 URL이 넘어왔을 경우
+                    // If the image or URL is passed
                     let imageView = TWImageView(frame: frameForView(index), browserType: browserType)
                     imageView.imageDelegate = self
                     
                     switch self.browserType {
                     case .NORMAL:
-                        // 처음 로드 시 해당 페이지의 이미지만 로드
+                        // Load only images from this page on first load
                         if index == defaultPageIndex || defaultPageIndex - 1 == index || defaultPageIndex + 1 == index {
                             imageView.setupImage(object)
                         }
@@ -249,16 +246,15 @@ public class TWImageBrowser: UIView {
                 }
             }
             
-            // 화면에 보여줄 페이지 번호 설정
+            // Set page number to display on screen
             self.pageControl.numberOfPages = self.totalPage
             self.pageControl.currentPage = defaultPageIndex
         } else {
-            // 이미지를 하나도 받지 못하면 대표 백그라운드 이미지 하나만 보여준다
+            // If no images are received, only one representative background image is displayed.
             
             self.scrollView.frame = CGRectMake(0, 0, self.bounds.width, self.bounds.height)
             self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.width, self.scrollView.frame.height)
             
-            // 외부로부터 백그라운드에 쓰일 이미지를 얻어온다
             guard let backgroundImage = self.dataSource?.backgroundImage(self) else {
                 return
             }
@@ -272,7 +268,6 @@ public class TWImageBrowser: UIView {
             
             self.scrollView.addSubview(imageView)
             
-            // page control도 화면에 안나오게 설정
             self.pageControl.hidden = true
         }
     }
@@ -322,7 +317,7 @@ public class TWImageBrowser: UIView {
                 }
             }
             
-            // 화면 변경이 완료되면 원래의 페이지로 이동
+            // When the screen change is completed, go to the original page
             movePage(lastPage, animated: false)
         }
     }
@@ -345,15 +340,15 @@ public class TWImageBrowser: UIView {
         
         self.performSelector(autoScrollFunctionName, withObject: nil, afterDelay: self.autoPlayTimeInterval)
     }
-    
 }
 
+// MARK: - TWImageViewDelegate
 extension TWImageBrowser: TWImageViewDelegate {
     func singleTapGesture(view: TWImageView) {
         delegate?.imageBrowserDidSingleTap(self, page: view.tag)
     }
     
-    func doubleTapGesture(view: TWImageView) {
-        delegate?.imageBrowserDidDoubleTap(self, page: view.tag)
+    func doubleTapGesture(view: TWImageView, currentZoomScale: CGFloat) {
+        delegate?.imageBrowserDidDoubleTap(self, page: view.tag, currentZoomScale: currentZoomScale)
     }
 }

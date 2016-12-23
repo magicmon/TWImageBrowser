@@ -8,8 +8,7 @@
 //
 
 extension UIView {
-    public func copyView() -> AnyObject?
-    {
+    public func copyView() -> AnyObject? {
         return NSKeyedUnarchiver.unarchiveObjectWithData(NSKeyedArchiver.archivedDataWithRootObject(self))
     }
 }

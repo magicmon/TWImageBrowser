@@ -146,7 +146,7 @@ extension GIFViewController: TWImageBrowserDelegate {
         print("imageBrowserDidSingleTap \(page)")
     }
     
-    func imageBrowserDidDoubleTap(imageBrowser: TWImageBrowser, page: Int) {
-        print("imageBrowserDidDoubleTap \(page)")
+    func imageBrowserDidDoubleTap(imageBrowser: TWImageBrowser, page: Int, currentZoomScale: CGFloat) {
+        print("imageBrowserDidDoubleTap \(page) \(currentZoomScale)")
     }
 }
