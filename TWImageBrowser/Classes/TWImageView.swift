@@ -11,7 +11,7 @@ import AlamofireImage
 
 protocol TWImageViewDelegate: class {
     func singleTapGesture(view: TWImageView)
-    func doubleTapGesture(view: TWImageView)
+    func doubleTapGesture(view: TWImageView, currentZoomScale: CGFloat)
 }
 
 class TWImageView: UIScrollView {
@@ -71,18 +71,18 @@ class TWImageView: UIScrollView {
         // container view
         containerView = UIView(frame: self.bounds)
         containerView.backgroundColor = UIColor.clearColor()
-        addSubview(self.containerView)
+        addSubview(containerView)
         
         // image view
         imageView = UIImageView(frame: self.containerView.bounds)
-        containerView.addSubview(self.imageView)
+        containerView.addSubview(imageView)
         
         // indicator view
         indicator = UIActivityIndicatorView(frame: CGRectMake(0, 0, 50, 50))
         indicator.center = self.containerView.center
         indicator.activityIndicatorViewStyle = .White
         indicator.hidesWhenStopped = true
-        containerView.addSubview(self.indicator)
+        containerView.addSubview(indicator)
         
         // gesture recognizer
         let singleTapRecognizer = UITapGestureRecognizer(target: self, action:#selector(scrollViewDidSingleTapped))
@@ -243,7 +243,7 @@ extension TWImageView {
             self.zoomToRect(zoomToRect, animated: true)
         }
         
-        imageDelegate?.doubleTapGesture(self)
+        imageDelegate?.doubleTapGesture(self, currentZoomScale: self.zoomScale)
     }
 }
 

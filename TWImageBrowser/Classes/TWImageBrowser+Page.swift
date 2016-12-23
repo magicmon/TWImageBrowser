@@ -11,21 +11,21 @@
 // MARK: - Page
 extension TWImageBrowser {
     /**
-     * 특정 페이지로 이동
+     * Go to a specific page
      *
-     * @param page 페이지 번호
-     * @param animated 페이지 이동 시 에니메이션 효과를 줄지 결정. default는 true
-     * @return 이동한 페이지의 번호를 반환
+     * @param page page number.
+     * @param animated Decide to start animating when moving the page. Default is true
+     * @return Returns the number of the moved page
      */
     public func movePage(toPage: Int, animated: Bool = true) -> Int{
         
         switch self.browserType {
         case .NORMAL :
             
-            // 이미지가 아직 로드 안된 경우 로드
+            // Load image if it has not already been loaded.
             loadImageFromView(toPage)
             
-            // 페이지 범위를 넘어가면 offset을 이동시키지 않음
+            // Do not move offset unless page range.
             if toPage < 1 {
                 return self.currentPage
             } else if toPage > self.totalPage {
@@ -40,7 +40,7 @@ extension TWImageBrowser {
             self.scrollView.setContentOffset(CGPointMake(self.scrollView.frame.width * CGFloat(toPage), 0), animated: animated)
             
             if toPage > self.totalPage {
-                // 마지막 페이지에서 첫페이지로 넘어가는 경우
+                // Go to the first page from the last page.
                 return 1
             } else if toPage < 1 {
                 return self.totalPage
@@ -51,29 +51,34 @@ extension TWImageBrowser {
     }
     
     /**
-     * 다음 페이지로 이동
+     * Go to a next page
      *
-     * @param animated 페이지 이동 시 에니메이션 효과를 줄지 결정. default는 true
-     * @return 이동한 페이지의 번호를 반환
+     * @param animated Decide to start animating when moving the page. Default is true
+     * @return Returns the number of the moved page
      */
-    public func nextPage(animated: Bool = true)  -> Int{
+    public func nextPage(animated: Bool = true)  -> Int {
+        
+        lastPage = self.currentPage
+        
         return movePage(self.currentPage + 1, animated: animated)
     }
     
     /**
-     * 이전 페이지로 이동
+     * Go to previous page
      *
-     * @param animated 페이지 이동 시 에니메이션 효과를 줄지 결정. default는 true
-     * @return 이동한 페이지의 번호를 반환
+     * @param animated Decide to start animating when moving the page. Default is true
+     * @return Returns the number of the moved page
      */
-    public func prevPage(animated: Bool = true)  -> Int{
+    public func prevPage(animated: Bool = true)  -> Int {
+        
+        lastPage = self.currentPage
+        
         return movePage(self.currentPage - 1, animated: animated)
     }
     
     /**
-     * 스크롤뷰의 현재 페이지
+     * Current page in scroll view
      *
-     * @return 현재 바라보고 있는 페이지 위치(1페이지부터 시작)
      */
     public var currentPage: Int {
         switch self.browserType {
@@ -94,8 +99,8 @@ extension TWImageBrowser {
     }
     
     /**
-     * 스크롤뷰의 전체 페이지
-     * @return 전체 페이지 개수 반환
+     * Total page in scroll view
+     *
      */
     public var totalPage: Int {
         switch self.browserType {

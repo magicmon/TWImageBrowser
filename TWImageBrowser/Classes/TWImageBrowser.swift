@@ -19,7 +19,7 @@ public protocol TWImageBrowserDelegate: class {
     func imageBrowserDidScroll(imageBrowser: TWImageBrowser)
     func imageBrowserDidEndScrollingAnimation(imageBrowser: TWImageBrowser)
     func imageBrowserDidSingleTap(imageBrowser: TWImageBrowser, page: Int)
-    func imageBrowserDidDoubleTap(imageBrowser: TWImageBrowser, page: Int)
+    func imageBrowserDidDoubleTap(imageBrowser: TWImageBrowser, page: Int, currentZoomScale: CGFloat)
 }
 
 public enum TWImageBrowserType: Int {
@@ -340,11 +340,6 @@ public class TWImageBrowser: UIView {
         
         self.performSelector(autoScrollFunctionName, withObject: nil, afterDelay: self.autoPlayTimeInterval)
     }
-    
-    
-    func draggedView() {
-        
-    }
 }
 
 // MARK: - TWImageViewDelegate
@@ -353,7 +348,7 @@ extension TWImageBrowser: TWImageViewDelegate {
         delegate?.imageBrowserDidSingleTap(self, page: view.tag)
     }
     
-    func doubleTapGesture(view: TWImageView) {
-        delegate?.imageBrowserDidDoubleTap(self, page: view.tag)
+    func doubleTapGesture(view: TWImageView, currentZoomScale: CGFloat) {
+        delegate?.imageBrowserDidDoubleTap(self, page: view.tag, currentZoomScale: currentZoomScale)
     }
 }

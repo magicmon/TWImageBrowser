@@ -20,38 +20,24 @@ extension UIScrollView {
 extension TWImageBrowser: UIScrollViewDelegate {
     public func scrollViewDidScroll(scrollView: UIScrollView) {
         
-        // pageControl의 위치 이동
         self.pageControl.currentPage = self.currentPage - 1
         
-        // 스크롤 발생
         self.delegate?.imageBrowserDidScroll(self)
     }
     
     public func scrollViewWillBeginDragging(scrollView: UIScrollView) {
-        // 스크롤 시작 전 마지막으로 보고 있던 페이지 저장
+        // Save last viewed page before scrolling
         lastPage = self.currentPage
         
-        // 자동 스크롤 중이던 항목을 멈춤
+        // Stops what was being scrolled
         NSObject.cancelPreviousPerformRequestsWithTarget(self, selector:autoScrollFunctionName , object: nil)
-    }
-    
-    public func scrollViewWillEndDragging(scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        // 사용자에 의한 스크롤 종료
-    }
-    
-    public func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        
-    }
-    
-    public func scrollViewWillBeginDecelerating(scrollView: UIScrollView) {
-        // 스크롤 멈추기 시작
     }
     
     public func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
         
         // stop scroll
         
-        // 자동 스크롤 재 실행
+        // Restart to auto scrolling
         if self.browserType == .BANNER && self.autoPlayTimeInterval > 0 {
             self.performSelector(autoScrollFunctionName, withObject: nil, afterDelay:self.autoPlayTimeInterval)
         }
@@ -64,8 +50,17 @@ extension TWImageBrowser: UIScrollViewDelegate {
         
         switch self.browserType {
         case .NORMAL:
-            // 이미지가 아직 로드 안된 경우 로드
+            // Load image if it has not already been loaded.
             loadImageFromView(self.scrollView.currentPage)
+            
+            // Initialize zoomScale when you go to another page.
+            for index in 0...self.imageObjects.count - 1 {
+                if index + 1 == self.scrollView.currentPage { continue }
+                
+                if let imageView = self.scrollView.subviews[index] as? TWImageView where imageView.imageView.image != nil && imageView.zoomScale > 1.0 {
+                    imageView.setZoomScale(imageView.minimumZoomScale, animated: false)
+                }
+            }
         case .BANNER:
             if self.scrollView.currentPage == 1 {
                 self.scrollView.setContentOffset(CGPointMake(self.scrollView.frame.width * CGFloat(self.totalPage), 0), animated: false)

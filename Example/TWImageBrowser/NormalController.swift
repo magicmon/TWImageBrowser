@@ -161,7 +161,7 @@ extension NormalController: TWImageBrowserDataSource {
     }
     
     func showDefaultPageIndex(imageBrowser: TWImageBrowser) -> Int {
-        return 0
+        return 3
     }
 }
 
@@ -178,7 +178,7 @@ extension NormalController: TWImageBrowserDelegate {
         print("imageBrowserDidSingleTap \(page)")
     }
     
-    func imageBrowserDidDoubleTap(imageBrowser: TWImageBrowser, page: Int) {
-        print("imageBrowserDidDoubleTap \(page)")
+    func imageBrowserDidDoubleTap(imageBrowser: TWImageBrowser, page: Int, currentZoomScale: CGFloat) {
+        print("imageBrowserDidDoubleTap \(page) \(currentZoomScale)")
     }
 }
