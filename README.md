@@ -58,7 +58,13 @@ TWImageBrowser is available through [CocoaPods](http://cocoapods.org). To instal
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod "TWImageBrowser"
+pod 'TWImageBrowser'
+```
+
+If you are using swift2.x version, install it below.
+
+```ruby
+pod 'TWImageBrowser', :branch => 'swift2.3'
 ```
 
 ## Author
