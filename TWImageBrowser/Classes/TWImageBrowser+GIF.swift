@@ -9,28 +9,41 @@
 import UIKit
 import ImageIO
 
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
 
 private var imageRawDataKey: Void?
 
 extension UIImage {
     // MARK: RAW DATA
-    public var rawData: NSData? {
+    public var rawData: Data? {
         get {
-            return objc_getAssociatedObject(self, &imageRawDataKey) as? NSData
+            return objc_getAssociatedObject(self, &imageRawDataKey) as? Data
         }
         set(newValue) {
             objc_setAssociatedObject(self, &imageRawDataKey, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
         }
     }
     
-    public convenience init?(rawData: NSData){
+    public convenience init?(rawData: Data){
         self.init(rawData:rawData)
         self.rawData = rawData
     }
     
-    override public class func initialize() {
-        var onceToken : dispatch_once_t = 0;
-        dispatch_once(&onceToken) {
+    override open class func initialize() {
+        
+        let justAOneTimeThing: () = {
             let originalSelector = #selector(UIImage.init(data:))
             let swizzledSelector = #selector(UIImage.init(rawData:))
             
@@ -43,51 +56,53 @@ extension UIImage {
             } else {
                 method_exchangeImplementations(originalMethod, swizzledMethod)
             }
-        }
+        }()
+    
+        justAOneTimeThing
     }
     
     // MARK: GIF
-    public class func gifImageWithData(data: NSData) -> UIImage? {
-        guard let source = CGImageSourceCreateWithData(data, nil) else {
+    public class func gifImageWithData(_ data: Data) -> UIImage? {
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
             return nil
         }
         
         return UIImage.animatedImageWithSource(source)
     }
     
-    public class func gifImageWithURL(gifUrl:String) -> UIImage? {
-        guard let bundleURL:NSURL? = NSURL(string: gifUrl) else {
+    public class func gifImageWithURL(_ gifUrl:String) -> UIImage? {
+        guard let bundleURL:URL? = URL(string: gifUrl) else {
             return nil
         }
         
-        guard let imageData = NSData(contentsOfURL: bundleURL!) else {
+        guard let imageData = try? Data(contentsOf: bundleURL!) else {
             return nil
         }
         
         return gifImageWithData(imageData)
     }
     
-    public class func gifImageWithName(name: String) -> UIImage? {
-        guard let bundleURL = NSBundle.mainBundle().URLForResource(name, withExtension: "gif") else {
+    public class func gifImageWithName(_ name: String) -> UIImage? {
+        guard let bundleURL = Bundle.main.url(forResource: name, withExtension: "gif") else {
                 return nil
         }
         
-        guard let imageData = NSData(contentsOfURL: bundleURL) else {
+        guard let imageData = try? Data(contentsOf: bundleURL) else {
             return nil
         }
         
         return gifImageWithData(imageData)
     }
     
-    class func delayForImageAtIndex(index: Int, source: CGImageSource!) -> Double {
+    class func delayForImageAtIndex(_ index: Int, source: CGImageSource!) -> Double {
         var delay = 0.1
         
         let cfProperties = CGImageSourceCopyPropertiesAtIndex(source, index, nil)
-        let gifProperties: CFDictionaryRef = unsafeBitCast(CFDictionaryGetValue(cfProperties, unsafeAddressOf(kCGImagePropertyGIFDictionary)), CFDictionary.self)
-        var delayObject: AnyObject = unsafeBitCast(CFDictionaryGetValue(gifProperties, unsafeAddressOf(kCGImagePropertyGIFUnclampedDelayTime)), AnyObject.self)
+        let gifProperties: CFDictionary = unsafeBitCast(CFDictionaryGetValue(cfProperties, Unmanaged.passUnretained(kCGImagePropertyGIFDictionary).toOpaque()), to: CFDictionary.self)
+        var delayObject: AnyObject = unsafeBitCast(CFDictionaryGetValue(gifProperties, Unmanaged.passUnretained(kCGImagePropertyGIFUnclampedDelayTime).toOpaque()), to: AnyObject.self)
         
         if delayObject.doubleValue == 0 {
-            delayObject = unsafeBitCast(CFDictionaryGetValue(gifProperties, unsafeAddressOf(kCGImagePropertyGIFDelayTime)), AnyObject.self)
+            delayObject = unsafeBitCast(CFDictionaryGetValue(gifProperties, Unmanaged.passUnretained(kCGImagePropertyGIFDelayTime).toOpaque()), to: AnyObject.self)
         }
         
         delay = delayObject as! Double
@@ -99,7 +114,7 @@ extension UIImage {
         return delay
     }
     
-    class func gcdForPair(a: Int?, _ b: Int?) -> Int {
+    class func gcdForPair(_ a: Int?, _ b: Int?) -> Int {
         var a = a
         var b = b
         
@@ -132,7 +147,7 @@ extension UIImage {
         }
     }
     
-    class func gcdForArray(array: Array<Int>) -> Int {
+    class func gcdForArray(_ array: Array<Int>) -> Int {
         if array.isEmpty {
             return 1
         }
@@ -146,9 +161,9 @@ extension UIImage {
         return gcd
     }
     
-    class func animatedImageWithSource(source: CGImageSource) -> UIImage? {
+    class func animatedImageWithSource(_ source: CGImageSource) -> UIImage? {
         let count = CGImageSourceGetCount(source)
-        var images = [CGImageRef]()
+        var images = [CGImage]()
         var delays = [Int]()
         
         for i in 0..<count {
@@ -176,7 +191,7 @@ extension UIImage {
         var frame: UIImage
         var frameCount: Int
         for i in 0..<count {
-            frame = UIImage(CGImage: images[Int(i)])
+            frame = UIImage(cgImage: images[Int(i)])
             frameCount = Int(delays[Int(i)] / gcd)
             
             for _ in 0..<frameCount {
@@ -184,7 +199,7 @@ extension UIImage {
             }
         }
         
-        let animation = UIImage.animatedImageWithImages(frames, duration: Double(duration) / 1000.0)
+        let animation = UIImage.animatedImage(with: frames, duration: Double(duration) / 1000.0)
         
         return animation
     }

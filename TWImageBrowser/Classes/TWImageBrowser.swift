@@ -10,24 +10,24 @@ import UIKit
 import AlamofireImage
 
 public protocol TWImageBrowserDataSource: class {
-    func backgroundImage(imageBrowser: TWImageBrowser) -> UIImage?      // default background image
-    func loadObjects(imageBrowser: TWImageBrowser) -> [AnyObject]?      // get image list
-    func showDefaultPageIndex(imageBrowser: TWImageBrowser) -> Int      // The page number to show first.
+    func backgroundImage(_ imageBrowser: TWImageBrowser) -> UIImage?        // default background image
+    func loadObjects(_ imageBrowser: TWImageBrowser) -> [Any]?              // get image list
+    func showDefaultPageIndex(_ imageBrowser: TWImageBrowser) -> Int        // The page number to show first.
 }
 
 public protocol TWImageBrowserDelegate: class {
-    func imageBrowserDidScroll(imageBrowser: TWImageBrowser)
-    func imageBrowserDidEndScrollingAnimation(imageBrowser: TWImageBrowser)
-    func imageBrowserDidSingleTap(imageBrowser: TWImageBrowser, page: Int)
-    func imageBrowserDidDoubleTap(imageBrowser: TWImageBrowser, page: Int, currentZoomScale: CGFloat)
+    func imageBrowserDidScroll(_ imageBrowser: TWImageBrowser)
+    func imageBrowserDidEndScrollingAnimation(_ imageBrowser: TWImageBrowser)
+    func imageBrowserDidSingleTap(_ imageBrowser: TWImageBrowser, page: Int)
+    func imageBrowserDidDoubleTap(_ imageBrowser: TWImageBrowser, page: Int, currentZoomScale: CGFloat)
 }
 
 public enum TWImageBrowserType: Int {
-    case NORMAL
-    case BANNER
+    case normal
+    case banner
 }
 
-public class TWImageBrowser: UIView {
+open class TWImageBrowser: UIView {
     
     internal var autoScrollFunctionName: Selector = #selector(TWImageBrowser.autoScrollingView) // Functions to be called when autoscrolling
     
@@ -37,16 +37,16 @@ public class TWImageBrowser: UIView {
     internal var lastPage: Int = 1                          // Specifying the last move page.
     internal var isOrientation: Bool = false                // Check if the screen is rotating
     
-    public weak var dataSource: TWImageBrowserDataSource?
-    public weak var delegate: TWImageBrowserDelegate?
+    open weak var dataSource: TWImageBrowserDataSource?
+    open weak var delegate: TWImageBrowserDelegate?
     
-    public var imageObjects: [AnyObject] = []               // A list of images
-    public var browserType: TWImageBrowserType = .NORMAL    // Browser Type
-    public var autoPlayTimeInterval: NSTimeInterval = 3.0   // Set auto scrolling time (auto scrolling if higher than 0.0).
+    open var imageObjects: [Any] = []                       // A list of images
+    open var browserType: TWImageBrowserType = .normal      // Browser Type
+    open var autoPlayTimeInterval: TimeInterval = 3.0       // Set auto scrolling time (auto scrolling if higher than 0.0).
     
-    public var hiddenPageControl: Bool = false              // Whether pagecontrol is visible in bottom.
+    open var hiddenPageControl: Bool = false                // Whether pagecontrol is visible in bottom.
     
-    public var maximumScale: CGFloat = 3.0 {                // maximum zoom scale (If you are loading a gif, set the max scale to 1.0)
+    open var maximumScale: CGFloat = 3.0 {                  // maximum zoom scale (If you are loading a gif, set the max scale to 1.0)
         didSet {
             if maximumScale < 1.0 {
                 maximumScale = 1
@@ -54,7 +54,7 @@ public class TWImageBrowser: UIView {
         }
     }
     
-    public var viewPadding: CGFloat = 0.0 {                 // The spacing between each image view
+    open var viewPadding: CGFloat = 0.0 {                   // The spacing between each image view
         didSet {
             if viewPadding < 0.0 {
                 viewPadding = 0
@@ -74,7 +74,7 @@ public class TWImageBrowser: UIView {
         initializeNotification()
     }
     
-    public override func awakeFromNib() {
+    open override func awakeFromNib() {
         super.awakeFromNib()
         
         initializeScrollView()
@@ -82,13 +82,13 @@ public class TWImageBrowser: UIView {
         initializeNotification()
     }
     
-    public override func layoutSubviews() {
+    open override func layoutSubviews() {
         super.layoutSubviews()
         
         // If you have a banner and there is an auto play, you can run it automatically.
-        if self.browserType == .BANNER && self.autoPlayTimeInterval > 0 {
-            NSObject.cancelPreviousPerformRequestsWithTarget(self, selector:autoScrollFunctionName , object: nil)
-            self.performSelector(autoScrollFunctionName, withObject: nil, afterDelay:self.autoPlayTimeInterval)
+        if self.browserType == .banner && self.autoPlayTimeInterval > 0 {
+            NSObject.cancelPreviousPerformRequests(withTarget: self, selector:autoScrollFunctionName , object: nil)
+            self.perform(autoScrollFunctionName, with: nil, afterDelay:self.autoPlayTimeInterval)
         }
         
         // Load the browser only when there is no data.
@@ -96,14 +96,14 @@ public class TWImageBrowser: UIView {
             loadBrowser()
         }
         
-        self.pageControl.frame = CGRectMake(0, self.bounds.size.height - 20.0, self.bounds.size.width, 20.0)
+        self.pageControl.frame = CGRect(x: 0, y: self.bounds.size.height - 20.0, width: self.bounds.size.width, height: 20.0)
     }
     
     // MARK: - Initial
     func initializeScrollView() {
         // scroll View
-        self.scrollView = UIScrollView(frame:CGRectMake(-self.viewPadding, 0, self.bounds.width + (2 * self.viewPadding), self.bounds.height))
-        self.scrollView.pagingEnabled = true
+        self.scrollView = UIScrollView(frame:CGRect(x: -self.viewPadding, y: 0, width: self.bounds.width + (2 * self.viewPadding), height: self.bounds.height))
+        self.scrollView.isPagingEnabled = true
         self.scrollView.showsHorizontalScrollIndicator = false
         self.scrollView.showsVerticalScrollIndicator = false
         self.scrollView.minimumZoomScale = 1.0
@@ -111,19 +111,19 @@ public class TWImageBrowser: UIView {
         self.scrollView.zoomScale = 1.0
         self.scrollView.tag = 0
         self.scrollView.delegate = self
-        self.scrollView.backgroundColor = UIColor.clearColor()
-        self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.width, self.scrollView.frame.height)
-        self.scrollView.contentOffset = CGPointZero
+        self.scrollView.backgroundColor = UIColor.clear
+        self.scrollView.contentSize = CGSize(width: self.scrollView.frame.width, height: self.scrollView.frame.height)
+        self.scrollView.contentOffset = CGPoint.zero
         self.scrollView.scrollsToTop = false
-        self.scrollView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        self.scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
         self.addSubview(self.scrollView)
     }
     
     func initializePageControl() {
         // page control
-        self.pageControl = UIPageControl(frame: CGRectMake(0, self.bounds.size.height - 20.0, self.bounds.size.width, 20.0))
-        self.pageControl.userInteractionEnabled = false
+        self.pageControl = UIPageControl(frame: CGRect(x: 0, y: self.bounds.size.height - 20.0, width: self.bounds.size.width, height: 20.0))
+        self.pageControl.isUserInteractionEnabled = false
         self.addSubview(self.pageControl)
     }
     
@@ -151,15 +151,15 @@ public class TWImageBrowser: UIView {
                 }
             }
             
-            var offset: CGPoint = CGPointZero
+            var offset: CGPoint = CGPoint.zero
             
             switch self.browserType {
-            case .NORMAL:
+            case .normal:
                 self.imageObjects = objectList
-                self.pageControl.hidden = true
+                self.pageControl.isHidden = true
                 
-                offset = CGPointMake((self.scrollView.frame.width * CGFloat(defaultPageIndex)) + ((2 * self.viewPadding) * CGFloat(defaultPageIndex)), 0)
-            case .BANNER:
+                offset = CGPoint(x: (self.scrollView.frame.width * CGFloat(defaultPageIndex)) + ((2 * self.viewPadding) * CGFloat(defaultPageIndex)), y: 0)
+            case .banner:
                 // make image list
                 // 형태는 다음과 같다
                 // image1, image2, image3 이라면 ->>> image3 | image1 | image2 | image3 | image1
@@ -169,10 +169,11 @@ public class TWImageBrowser: UIView {
                 if let lastObject = objectList.last {
                     if objectList.last is UIView {
                         if let lastView = lastObject as? UIView, let copyView = lastView.copyView() {
-                            objectList.insert(copyView, atIndex: 0)
+                            objectList.insert(copyView, at: 0)
+                            
                         }
                     } else {
-                        objectList.insert(lastObject, atIndex: 0)
+                        objectList.insert(lastObject, at: 0)
                     }
                 }
                 
@@ -188,32 +189,32 @@ public class TWImageBrowser: UIView {
                 self.imageObjects = objectList
                 
                 // Specify offset (second page is 1).
-                offset = CGPointMake((self.scrollView.frame.width * CGFloat(defaultPageIndex + 1)) + ((2 * self.viewPadding) * CGFloat(defaultPageIndex + 1)), 0)
+                offset = CGPoint(x: (self.scrollView.frame.width * CGFloat(defaultPageIndex + 1)) + ((2 * self.viewPadding) * CGFloat(defaultPageIndex + 1)), y: 0)
                 
                 // bounces 처리 제거(페이지 이동 시 튀는 현상)
                 self.scrollView.bounces = false
                 
                 // page control 화면에 보이게 설정
                 if hiddenPageControl == true {
-                    self.pageControl.hidden = true
+                    self.pageControl.isHidden = true
                 } else {
-                    self.pageControl.hidden = objectList.count > 3 ? false : true
+                    self.pageControl.isHidden = objectList.count > 3 ? false : true
                 }
             }
             
             
-            self.scrollView.frame = CGRectMake(-self.viewPadding, 0, self.bounds.width + (2 * self.viewPadding), self.bounds.height)
-            self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.width * CGFloat(self.imageObjects.count), self.scrollView.frame.height)
+            self.scrollView.frame = CGRect(x: -self.viewPadding, y: 0, width: self.bounds.width + (2 * self.viewPadding), height: self.bounds.height)
+            self.scrollView.contentSize = CGSize(width: self.scrollView.frame.width * CGFloat(self.imageObjects.count), height: self.scrollView.frame.height)
             
             self.scrollView.setContentOffset(offset, animated: false)
             
             // set image View
-            for (index, object) in self.imageObjects.enumerate() {
+            for (index, object) in self.imageObjects.enumerated() {
                 
                 if let view = object as? UIView {
                     view.frame = frameForView(index)
                     view.layoutSubviews()
-                    view.tag = browserType == .NORMAL ? index + 1 : index
+                    view.tag = browserType == .normal ? index + 1 : index
                     
                     self.scrollView.addSubview(object as! UIView)
                 } else {
@@ -222,7 +223,7 @@ public class TWImageBrowser: UIView {
                     imageView.imageDelegate = self
                     
                     switch self.browserType {
-                    case .NORMAL:
+                    case .normal:
                         // Load only images from this page on first load
                         if index == defaultPageIndex || defaultPageIndex - 1 == index || defaultPageIndex + 1 == index {
                             imageView.setupImage(object)
@@ -230,16 +231,16 @@ public class TWImageBrowser: UIView {
                         
                         imageView.tag = index + 1
                         imageView.maximumZoomScale = self.maximumScale
-                        imageView.imageContentMode = .ScaleAspectFit
-                        imageView.imageView.contentMode = .ScaleAspectFit
-                    case .BANNER:
+                        imageView.imageContentMode = .scaleAspectFit
+                        imageView.imageView.contentMode = .scaleAspectFit
+                    case .banner:
                         imageView.setupImage(object)
                         
                         imageView.tag = index
                         imageView.maximumZoomScale = 1.0
                         imageView.minimumZoomScale = 1.0
-                        imageView.imageContentMode = .ScaleToFill
-                        imageView.imageView.contentMode = .ScaleToFill
+                        imageView.imageContentMode = .scaleToFill
+                        imageView.imageView.contentMode = .scaleToFill
                     }
                     
                     self.scrollView.addSubview(imageView)
@@ -252,8 +253,8 @@ public class TWImageBrowser: UIView {
         } else {
             // If no images are received, only one representative background image is displayed.
             
-            self.scrollView.frame = CGRectMake(0, 0, self.bounds.width, self.bounds.height)
-            self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.width, self.scrollView.frame.height)
+            self.scrollView.frame = CGRect(x: 0, y: 0, width: self.bounds.width, height: self.bounds.height)
+            self.scrollView.contentSize = CGSize(width: self.scrollView.frame.width, height: self.scrollView.frame.height)
             
             guard let backgroundImage = self.dataSource?.backgroundImage(self) else {
                 return
@@ -268,28 +269,28 @@ public class TWImageBrowser: UIView {
             
             self.scrollView.addSubview(imageView)
             
-            self.pageControl.hidden = true
+            self.pageControl.isHidden = true
         }
     }
     
     // MARK: - Orientation
     func initializeNotification() {
-        NSNotificationCenter.defaultCenter().addObserver(
+        NotificationCenter.default.addObserver(
             self, selector: #selector(TWImageBrowser.orientationDidChange),
-            name: UIDeviceOrientationDidChangeNotification,
+            name: NSNotification.Name.UIDeviceOrientationDidChange,
             object: nil)
         
-        NSNotificationCenter.defaultCenter().addObserver(
+        NotificationCenter.default.addObserver(
             self,
             selector: #selector(TWImageBrowser.statusBarOrientationWillChange),
-            name: UIApplicationWillChangeStatusBarOrientationNotification,
+            name: NSNotification.Name.UIApplicationWillChangeStatusBarOrientation,
             object: nil
         )
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIApplicationWillChangeStatusBarOrientationNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationWillChangeStatusBarOrientation, object: nil)
         
         imageObjects.removeAll()
         scrollView?.removeFromSuperview()
@@ -306,9 +307,9 @@ public class TWImageBrowser: UIView {
         if self.isOrientation  {
             self.isOrientation = false
             
-            self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.width * CGFloat(self.imageObjects.count), self.scrollView.frame.height)
+            self.scrollView.contentSize = CGSize(width: self.scrollView.frame.width * CGFloat(self.imageObjects.count), height: self.scrollView.frame.height)
             
-            for (index, subview) in self.scrollView.subviews.enumerate() {
+            for (index, subview) in self.scrollView.subviews.enumerated() {
                 
                 subview.frame = frameForView(index)
                 
@@ -323,32 +324,32 @@ public class TWImageBrowser: UIView {
     }
     
     // MARK: Frame
-    func frameForView(index: Int) -> CGRect{
+    func frameForView(_ index: Int) -> CGRect{
         var viewFrame : CGRect = self.scrollView.bounds
         viewFrame.origin.x = viewFrame.size.width * CGFloat(index)
         viewFrame.origin.y = 0.0
-        viewFrame = CGRectInset(viewFrame, self.viewPadding, 0.0)
+        viewFrame = viewFrame.insetBy(dx: self.viewPadding, dy: 0.0)
         
         return viewFrame
     }
     
     
     func autoScrollingView() {
-        NSObject.cancelPreviousPerformRequestsWithTarget(self, selector: autoScrollFunctionName , object: nil)
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: autoScrollFunctionName , object: nil)
         
         nextPage()
         
-        self.performSelector(autoScrollFunctionName, withObject: nil, afterDelay: self.autoPlayTimeInterval)
+        self.perform(autoScrollFunctionName, with: nil, afterDelay: self.autoPlayTimeInterval)
     }
 }
 
 // MARK: - TWImageViewDelegate
 extension TWImageBrowser: TWImageViewDelegate {
-    func singleTapGesture(view: TWImageView) {
+    func singleTapGesture(_ view: TWImageView) {
         delegate?.imageBrowserDidSingleTap(self, page: view.tag)
     }
     
-    func doubleTapGesture(view: TWImageView, currentZoomScale: CGFloat) {
+    func doubleTapGesture(_ view: TWImageView, currentZoomScale: CGFloat) {
         delegate?.imageBrowserDidDoubleTap(self, page: view.tag, currentZoomScale: currentZoomScale)
     }
 }

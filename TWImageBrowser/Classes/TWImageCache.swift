@@ -10,7 +10,7 @@ import AlamofireImage
 
 internal class TWImageCache {
     
-    private static var sInstance: TWImageCache? = nil
+    fileprivate static var sInstance: TWImageCache? = nil
     static func sharedInstance() -> TWImageCache! {
         if sInstance == nil {
             sInstance = TWImageCache()
@@ -22,8 +22,8 @@ internal class TWImageCache {
         
     }
     
-    private let kCommonDummyIdentifier = "kCommonDummyIdentifier"
-    private let kCommonDummyCircleIdentifier = "kCommonDummyCircleIdentifier"
+    fileprivate let kCommonDummyIdentifier = "kCommonDummyIdentifier"
+    fileprivate let kCommonDummyCircleIdentifier = "kCommonDummyCircleIdentifier"
     
     let downloader = UIImageView.af_sharedImageDownloader
     internal var imageCache = AutoPurgingImageCache(memoryCapacity: 50_000_000, preferredMemoryUsageAfterPurge: 30_000_000)
@@ -31,24 +31,25 @@ internal class TWImageCache {
         return imageCache
     }
     
-    func cacheImageWithURL(imageURLString: String?, completion: ((UIImage?) -> Void)? = nil) {
+    func cacheImageWithURL(_ imageURLString: String?, completion: ((UIImage?) -> Void)? = nil) {
         
         guard let imageURLString = imageURLString else {
             return
         }
         
-        guard let imageURL = NSURL(string: imageURLString) else {
+        guard let imageURL = URL(string: imageURLString) else {
             return
         }
         
-        let request = NSURLRequest(URL: imageURL)
+        let request = URLRequest(url: imageURL)
         
-        if let image = imageCache.imageWithIdentifier(imageURLString) {
+        
+        if let image = imageCache.image(withIdentifier: imageURLString) {
             completion?(image)
         } else {
-            downloader.downloadImage(URLRequest: request, filter: nil) { response in
+            downloader.download(request) { response in
                 if let image = response.result.value {
-                    self.imageCache.addImage(image, withIdentifier: imageURLString)
+                    self.imageCache.add(image, withIdentifier: imageURLString)
                     completion?(image)
                 } else {
                     completion?(nil)

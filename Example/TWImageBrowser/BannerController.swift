@@ -17,15 +17,15 @@ class BannerController: UIViewController, TWImageBrowserDelegate, TWImageBrowser
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        let height : CGFloat = UIApplication.sharedApplication().statusBarOrientation.isPortrait ? 0.0 : 32.0
+        let height : CGFloat = UIApplication.shared.statusBarOrientation.isPortrait ? 0.0 : 32.0
         
-        testViewer = TWImageBrowser(frame: CGRectMake(0, height + 64.0, self.view.frame.size.width, 150))
-        testViewer.browserType = .BANNER
+        testViewer = TWImageBrowser(frame: CGRect(x: 0, y: height + 64.0, width: self.view.frame.size.width, height: 150))
+        testViewer.browserType = .banner
         testViewer.delegate = self
         testViewer.dataSource = self
         testViewer.autoPlayTimeInterval = 3.0
         
-        testViewer.backgroundColor = UIColor.blackColor()
+        testViewer.backgroundColor = UIColor.black
         self.automaticallyAdjustsScrollViewInsets = false   // 필수 지정
         view.addSubview(testViewer)
     }
@@ -35,51 +35,51 @@ class BannerController: UIViewController, TWImageBrowserDelegate, TWImageBrowser
         // Dispose of any resources that can be recreated.
     }
     
-    override func willAnimateRotationToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
+    override func willAnimateRotation(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
         
-        let height : CGFloat = UIApplication.sharedApplication().statusBarOrientation.isPortrait ? 62.0 : 32.0
+        let height : CGFloat = UIApplication.shared.statusBarOrientation.isPortrait ? 62.0 : 32.0
         
         // 화면 가로/세로 모드 전환 시 꼭 필요
-        testViewer?.frame = CGRectMake(0, height, self.view.frame.size.width, 150)
+        testViewer?.frame = CGRect(x: 0, y: height, width: self.view.frame.size.width, height: 150)
     }
     
-    override func didRotateFromInterfaceOrientation(fromInterfaceOrientation: UIInterfaceOrientation) {
+    override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
         
     }
     
     // MARK: - DataSource
-    func backgroundImage(imageBrowser: TWImageBrowser) -> UIImage? {
+    func backgroundImage(_ imageBrowser: TWImageBrowser) -> UIImage? {
         return nil
     }
     
-    func loadObjects(imageBrowser: TWImageBrowser) -> [AnyObject]? {
+    func loadObjects(_ imageBrowser: TWImageBrowser) -> [Any]? {
         var imageList : [AnyObject] = []
-        imageList.append("image0.jpg")
-        imageList.append("https://pixabay.com/static/uploads/photo/2015/11/23/11/57/hot-chocolate-1058197_960_720.jpg")
-        imageList.append("https://pixabay.com/static/uploads/photo/2015/09/17/14/24/guitar-944261_960_720.jpg")
+        imageList.append("image0.jpg" as AnyObject)
+        imageList.append("https://pixabay.com/static/uploads/photo/2015/11/23/11/57/hot-chocolate-1058197_960_720.jpg" as AnyObject)
+        imageList.append("https://pixabay.com/static/uploads/photo/2015/09/17/14/24/guitar-944261_960_720.jpg" as AnyObject)
         
         return imageList
     }
     
-    func showDefaultPageIndex(imageBrowser: TWImageBrowser) -> Int {
+    func showDefaultPageIndex(_ imageBrowser: TWImageBrowser) -> Int {
         return 0
     }
     
     
     // MARK: - Delegate
-    func imageBrowserDidScroll(imageBrowser: TWImageBrowser) {
+    func imageBrowserDidScroll(_ imageBrowser: TWImageBrowser) {
 //        log("\(imageBrowser.currentPage) / \(imageBrowser.totalPage)")
     }
     
-    func imageBrowserDidEndScrollingAnimation(imageBrowser : TWImageBrowser) {
+    func imageBrowserDidEndScrollingAnimation(_ imageBrowser : TWImageBrowser) {
 //        log("\(imageBrowser.currentPage) / \(imageBrowser.totalPage)")
     }
     
-    func imageBrowserDidSingleTap(imageBrowser: TWImageBrowser, page: Int) {
+    func imageBrowserDidSingleTap(_ imageBrowser: TWImageBrowser, page: Int) {
         print("imageBrowserDidSingleTap \(page)")
     }
     
-    func imageBrowserDidDoubleTap(imageBrowser: TWImageBrowser, page: Int, currentZoomScale: CGFloat) {
+    func imageBrowserDidDoubleTap(_ imageBrowser: TWImageBrowser, page: Int, currentZoomScale: CGFloat) {
         print("imageBrowserDidDoubleTap \(page) \(currentZoomScale)")
     }
 }

@@ -12,7 +12,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     @IBOutlet var tableView: UITableView!
     
-    private let kTestCellMenuIdentifier = "kTestCellMenuIdentifier"
+    fileprivate let kTestCellMenuIdentifier = "kTestCellMenuIdentifier"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,19 +24,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // Dispose of any resources that can be recreated.
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 3
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let dequeuedCell: UITableViewCell? = tableView.dequeueReusableCellWithIdentifier(kTestCellMenuIdentifier)
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let dequeuedCell: UITableViewCell? = tableView.dequeueReusableCell(withIdentifier: kTestCellMenuIdentifier)
         var cell: UITableViewCell? = nil
         
         if let dequeuedCell = dequeuedCell {
             cell = dequeuedCell
         } else {
-            cell = UITableViewCell(style: .Default, reuseIdentifier: kTestCellMenuIdentifier)
-            cell?.selectionStyle = .Gray
+            cell = UITableViewCell(style: .default, reuseIdentifier: kTestCellMenuIdentifier)
+            cell?.selectionStyle = .gray
         }
         
         switch indexPath.row {
@@ -53,20 +53,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return cell!
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         
         switch indexPath.row {
         case 0:
-            if let controller = self.storyboard?.instantiateViewControllerWithIdentifier("NormalController") {
+            if let controller = self.storyboard?.instantiateViewController(withIdentifier: "NormalController") {
                 self.navigationController?.pushViewController(controller, animated: true)
             }
         case 1:
-            if let controller = self.storyboard?.instantiateViewControllerWithIdentifier("GIFViewController") {
+            if let controller = self.storyboard?.instantiateViewController(withIdentifier: "GIFViewController") {
                 self.navigationController?.pushViewController(controller, animated: true)
             }
         case 2:
-            if let controller = self.storyboard?.instantiateViewControllerWithIdentifier("BannerController") {
+            if let controller = self.storyboard?.instantiateViewController(withIdentifier: "BannerController") {
                 self.navigationController?.pushViewController(controller, animated: true)
             }
         default:

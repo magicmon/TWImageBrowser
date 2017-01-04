@@ -8,14 +8,14 @@
 //
 
 extension UIView {
-    public func copyView() -> AnyObject? {
-        return NSKeyedUnarchiver.unarchiveObjectWithData(NSKeyedArchiver.archivedDataWithRootObject(self))
+    public func copyView() -> Any? {
+        return NSKeyedUnarchiver.unarchiveObject(with: NSKeyedArchiver.archivedData(withRootObject: self))
     }
 }
 
 extension TWImageBrowser {
     
-    func loadImageFromView(toPage: Int) {
+    func loadImageFromView(_ toPage: Int) {
         if toPage - 1 >= 0 && toPage <= self.imageObjects.count {
             if let imageView = self.scrollView.subviews[toPage - 1] as? TWImageView {
                 if imageView.imageView.image == nil {

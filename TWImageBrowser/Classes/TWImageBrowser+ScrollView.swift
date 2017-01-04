@@ -18,38 +18,38 @@ extension UIScrollView {
 }
 
 extension TWImageBrowser: UIScrollViewDelegate {
-    public func scrollViewDidScroll(scrollView: UIScrollView) {
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
         self.pageControl.currentPage = self.currentPage - 1
         
         self.delegate?.imageBrowserDidScroll(self)
     }
     
-    public func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         // Save last viewed page before scrolling
         lastPage = self.currentPage
         
         // Stops what was being scrolled
-        NSObject.cancelPreviousPerformRequestsWithTarget(self, selector:autoScrollFunctionName , object: nil)
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector:autoScrollFunctionName , object: nil)
     }
     
-    public func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         
         // stop scroll
         
         // Restart to auto scrolling
-        if self.browserType == .BANNER && self.autoPlayTimeInterval > 0 {
-            self.performSelector(autoScrollFunctionName, withObject: nil, afterDelay:self.autoPlayTimeInterval)
+        if self.browserType == .banner && self.autoPlayTimeInterval > 0 {
+            self.perform(autoScrollFunctionName, with: nil, afterDelay:self.autoPlayTimeInterval)
         }
         
         scrollViewDidEndScrollingAnimation(scrollView)
     }
     
-    public func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
+    public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
         
         
         switch self.browserType {
-        case .NORMAL:
+        case .normal:
             // Load image if it has not already been loaded.
             loadImageFromView(self.scrollView.currentPage)
             
@@ -57,16 +57,16 @@ extension TWImageBrowser: UIScrollViewDelegate {
             for index in 0...self.imageObjects.count - 1 {
                 if index + 1 == self.scrollView.currentPage { continue }
                 
-                if let imageView = self.scrollView.subviews[index] as? TWImageView where imageView.imageView.image != nil && imageView.zoomScale > 1.0 {
+                if let imageView = self.scrollView.subviews[index] as? TWImageView, imageView.imageView.image != nil && imageView.zoomScale > 1.0 {
                     imageView.setZoomScale(imageView.minimumZoomScale, animated: false)
                 }
             }
-        case .BANNER:
+        case .banner:
             if self.scrollView.currentPage == 1 {
-                self.scrollView.setContentOffset(CGPointMake(self.scrollView.frame.width * CGFloat(self.totalPage), 0), animated: false)
+                self.scrollView.setContentOffset(CGPoint(x: self.scrollView.frame.width * CGFloat(self.totalPage), y: 0), animated: false)
             }
             else if self.scrollView.currentPage == self.imageObjects.count {
-                self.scrollView.setContentOffset(CGPointMake(self.scrollView.frame.width, 0), animated: false)
+                self.scrollView.setContentOffset(CGPoint(x: self.scrollView.frame.width, y: 0), animated: false)
             }
             break
         }

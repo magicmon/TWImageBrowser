@@ -10,20 +10,20 @@ import UIKit
 import AlamofireImage
 
 protocol TWImageViewDelegate: class {
-    func singleTapGesture(view: TWImageView)
-    func doubleTapGesture(view: TWImageView, currentZoomScale: CGFloat)
+    func singleTapGesture(_ view: TWImageView)
+    func doubleTapGesture(_ view: TWImageView, currentZoomScale: CGFloat)
 }
 
 class TWImageView: UIScrollView {
     
     var containerView : UIView!
     var imageView : UIImageView!
-    var imageContentMode: UIViewContentMode = .ScaleAspectFit
+    var imageContentMode: UIViewContentMode = .scaleAspectFit
     
     var indicator: UIActivityIndicatorView!
-    var minSize: CGSize = CGSizeZero
+    var minSize: CGSize = CGSize.zero
     
-    var browserType: TWImageBrowserType = .NORMAL
+    var browserType: TWImageBrowserType = .normal
     
     var maximumScale: CGFloat = 3.0
     
@@ -70,7 +70,7 @@ class TWImageView: UIScrollView {
     func setupSubviews() {
         // container view
         containerView = UIView(frame: self.bounds)
-        containerView.backgroundColor = UIColor.clearColor()
+        containerView.backgroundColor = UIColor.clear
         addSubview(containerView)
         
         // image view
@@ -78,9 +78,9 @@ class TWImageView: UIScrollView {
         containerView.addSubview(imageView)
         
         // indicator view
-        indicator = UIActivityIndicatorView(frame: CGRectMake(0, 0, 50, 50))
+        indicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         indicator.center = self.containerView.center
-        indicator.activityIndicatorViewStyle = .White
+        indicator.activityIndicatorViewStyle = .white
         indicator.hidesWhenStopped = true
         containerView.addSubview(indicator)
         
@@ -93,7 +93,7 @@ class TWImageView: UIScrollView {
         doubleTapRecognizer.numberOfTapsRequired = 2
         containerView.addGestureRecognizer(doubleTapRecognizer)
         
-        singleTapRecognizer.requireGestureRecognizerToFail(doubleTapRecognizer)
+        singleTapRecognizer.require(toFail: doubleTapRecognizer)
     }
     
     func setupScrollViewOption() {
@@ -102,11 +102,11 @@ class TWImageView: UIScrollView {
         self.showsVerticalScrollIndicator = false
         self.maximumZoomScale = maximumScale
         self.minimumZoomScale = 1.0
-        self.backgroundColor = UIColor.clearColor()
+        self.backgroundColor = UIColor.clear
         self.scrollsToTop = false
     }
     
-    func setupImage(image : AnyObject?) {
+    func setupImage(_ image : Any?) {
         if let loadImage = image as? UIImage {
             
             // append image
@@ -129,8 +129,8 @@ class TWImageView: UIScrollView {
                     
                     if let image = image {
                         if let rawData = image.rawData {
-                            var c = [UInt8](count: 1, repeatedValue: 0)
-                            rawData.getBytes(&c, length: 1)
+                            var c = [UInt8](repeating: 0, count: 1)
+                            (rawData as NSData).getBytes(&c, length: 1)
                             
                             if c[0] == 0x47 {       // gif
                                 self.imageView.image = UIImage.gifImageWithData(rawData)
@@ -150,14 +150,13 @@ class TWImageView: UIScrollView {
                 })
                 
             } else {
-                let components = urlString.componentsSeparatedByString("/")
+                let components = urlString.components(separatedBy: "/")
                 
                 if components.count > 1 {
-                    // fullpath가 넘어왔는지 체크
+                    // check for full path
                     self.imageView.image = UIImage(contentsOfFile: urlString)
-                }
-                else {
-                    // 파일 이름만 넘어온 경우
+                } else {
+                    // only have the file name
                     self.imageView.image = UIImage(named: urlString)
                 }
                 
@@ -175,8 +174,8 @@ class TWImageView: UIScrollView {
         
         let imageSize = self.imageView.contentSize()
         
-        self.containerView.frame = CGRectMake(0, 0, imageSize.width, imageSize.height)
-        self.imageView.center = CGPointMake(imageSize.width / 2, imageSize.height / 2)
+        self.containerView.frame = CGRect(x: 0, y: 0, width: imageSize.width, height: imageSize.height)
+        self.imageView.center = CGPoint(x: imageSize.width / 2, y: imageSize.height / 2)
         self.imageView.contentMode = imageContentMode
         
         self.contentSize = imageSize
@@ -192,7 +191,7 @@ class TWImageView: UIScrollView {
     // MARK: - Helper
     func getMaxZoomScale() -> CGFloat{
         
-        if self.browserType == .BANNER {
+        if self.browserType == .banner {
             return 1.0
         }
         
@@ -228,19 +227,19 @@ class TWImageView: UIScrollView {
 
 // MARK: - GestureRecognizer
 extension TWImageView {
-    func scrollViewDidSingleTapped(recognizer: UITapGestureRecognizer) {
+    func scrollViewDidSingleTapped(_ recognizer: UITapGestureRecognizer) {
         imageDelegate?.singleTapGesture(self)
     }
     
-    func scrollViewDidDoubleTapped(recognizer: UITapGestureRecognizer) {
+    func scrollViewDidDoubleTapped(_ recognizer: UITapGestureRecognizer) {
         if self.zoomScale > self.minimumZoomScale {
             self.setZoomScale(self.minimumZoomScale, animated: true)
         } else if (self.zoomScale < self.maximumZoomScale) {
             
-            let location = recognizer.locationInView(recognizer.view)
-            var zoomToRect = CGRectMake(0, 0, 50, 50)
-            zoomToRect.origin = CGPointMake(location.x - CGRectGetWidth(zoomToRect) / 2, location.y - CGRectGetHeight(zoomToRect) / 2)
-            self.zoomToRect(zoomToRect, animated: true)
+            let location = recognizer.location(in: recognizer.view)
+            var zoomToRect = CGRect(x: 0, y: 0, width: 50, height: 50)
+            zoomToRect.origin = CGPoint(x: location.x - zoomToRect.width / 2, y: location.y - zoomToRect.height / 2)
+            self.zoom(to: zoomToRect, animated: true)
         }
         
         imageDelegate?.doubleTapGesture(self, currentZoomScale: self.zoomScale)
@@ -249,11 +248,11 @@ extension TWImageView {
 
 // MARK: - UIScrollViewDelegate
 extension TWImageView: UIScrollViewDelegate {
-    func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return self.containerView
     }
     
-    func scrollViewDidZoom(scrollView: UIScrollView) {
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
         centerContent()
     }
 }
@@ -264,21 +263,21 @@ extension UIImageView {
             return image.sizeThatFits(self.bounds.size)
         }
         
-        return CGSizeZero
+        return CGSize.zero
     }
 }
 
 extension UIImage {
-    func sizeThatFits(size:CGSize) -> CGSize {
-        var imageSize = CGSizeMake(self.size.width / self.scale, self.size.height / self.scale)
+    func sizeThatFits(_ size:CGSize) -> CGSize {
+        var imageSize = CGSize(width: self.size.width / self.scale, height: self.size.height / self.scale)
         
         let widthRatio = imageSize.width / size.width
         let heightRatio = imageSize.height / size.height
         
         if widthRatio > heightRatio {
-            imageSize = CGSizeMake(imageSize.width / widthRatio, imageSize.height / widthRatio)
+            imageSize = CGSize(width: imageSize.width / widthRatio, height: imageSize.height / widthRatio)
         } else {
-            imageSize = CGSizeMake(imageSize.width / heightRatio, imageSize.height / heightRatio)
+            imageSize = CGSize(width: imageSize.width / heightRatio, height: imageSize.height / heightRatio)
         }
         
         return imageSize

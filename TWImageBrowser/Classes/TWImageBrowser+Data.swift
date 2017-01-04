@@ -12,7 +12,7 @@ import UIKit
 extension TWImageBrowser {
     
     // MARK: - Data Set
-    public func setPageControlColor(currentTintColor: UIColor, pageIndicatorTintColor: UIColor) {
+    public func setPageControlColor(_ currentTintColor: UIColor, pageIndicatorTintColor: UIColor) {
         self.pageControl.currentPageIndicatorTintColor = currentTintColor
         self.pageControl.pageIndicatorTintColor = pageIndicatorTintColor
     }
@@ -23,7 +23,7 @@ extension TWImageBrowser {
      * @param page Request page
      * @return Return the UIImage of the page
      */
-    public func getImage(page: Int) -> UIImage? {
+    public func getImage(_ page: Int) -> UIImage? {
         
         if self.imageObjects.count < 1 {
             return nil

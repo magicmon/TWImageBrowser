@@ -17,10 +17,10 @@ extension TWImageBrowser {
      * @param animated Decide to start animating when moving the page. Default is true
      * @return Returns the number of the moved page
      */
-    public func movePage(toPage: Int, animated: Bool = true) -> Int{
+    public func movePage(_ toPage: Int, animated: Bool = true) -> Int{
         
         switch self.browserType {
-        case .NORMAL :
+        case .normal :
             
             // Load image if it has not already been loaded.
             loadImageFromView(toPage)
@@ -32,12 +32,12 @@ extension TWImageBrowser {
                 return self.currentPage
             }
             
-            self.scrollView.setContentOffset(CGPointMake(self.scrollView.frame.width * CGFloat(toPage - 1), 0), animated: animated)
+            self.scrollView.setContentOffset(CGPoint(x: self.scrollView.frame.width * CGFloat(toPage - 1), y: 0), animated: animated)
             
             return toPage
             
-        case .BANNER:
-            self.scrollView.setContentOffset(CGPointMake(self.scrollView.frame.width * CGFloat(toPage), 0), animated: animated)
+        case .banner:
+            self.scrollView.setContentOffset(CGPoint(x: self.scrollView.frame.width * CGFloat(toPage), y: 0), animated: animated)
             
             if toPage > self.totalPage {
                 // Go to the first page from the last page.
@@ -56,7 +56,7 @@ extension TWImageBrowser {
      * @param animated Decide to start animating when moving the page. Default is true
      * @return Returns the number of the moved page
      */
-    public func nextPage(animated: Bool = true)  -> Int {
+    public func nextPage(_ animated: Bool = true)  -> Int {
         
         lastPage = self.currentPage
         
@@ -69,7 +69,7 @@ extension TWImageBrowser {
      * @param animated Decide to start animating when moving the page. Default is true
      * @return Returns the number of the moved page
      */
-    public func prevPage(animated: Bool = true)  -> Int {
+    public func prevPage(_ animated: Bool = true) -> Int {
         
         lastPage = self.currentPage
         
@@ -82,9 +82,9 @@ extension TWImageBrowser {
      */
     public var currentPage: Int {
         switch self.browserType {
-        case .NORMAL:
+        case .normal:
             return self.scrollView.currentPage
-        case .BANNER:
+        case .banner:
             if self.scrollView.currentPage == 1 {
                 // last page
                 return self.imageObjects.count - 2
@@ -104,9 +104,9 @@ extension TWImageBrowser {
      */
     public var totalPage: Int {
         switch self.browserType {
-        case .NORMAL:
+        case .normal:
             return self.scrollView.totalPage
-        case .BANNER:
+        case .banner:
             return self.scrollView.totalPage - 2
         }
     }
