@@ -62,16 +62,16 @@ extension UIImage {
     }
     
     // MARK: GIF
-    public class func gifImageWithData(_ data: Data) -> UIImage? {
+    public class func gifImage(withData data: Data) -> UIImage? {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
             return nil
         }
         
-        return UIImage.animatedImageWithSource(source)
+        return animatedImage(with: source)
     }
     
-    public class func gifImageWithURL(_ gifUrl:String) -> UIImage? {
-        guard let bundleURL:URL? = URL(string: gifUrl) else {
+    public class func gifImage(withURL url:String) -> UIImage? {
+        guard let bundleURL:URL? = URL(string: url) else {
             return nil
         }
         
@@ -79,10 +79,10 @@ extension UIImage {
             return nil
         }
         
-        return gifImageWithData(imageData)
+        return gifImage(withData: imageData)
     }
     
-    public class func gifImageWithName(_ name: String) -> UIImage? {
+    public class func gifImage(withName name: String) -> UIImage? {
         guard let bundleURL = Bundle.main.url(forResource: name, withExtension: "gif") else {
                 return nil
         }
@@ -91,11 +91,11 @@ extension UIImage {
             return nil
         }
         
-        return gifImageWithData(imageData)
+        return gifImage(withData: imageData)
     }
     
-    class func delayForImageAtIndex(_ index: Int, source: CGImageSource!) -> Double {
-        var delay = 0.1
+    class func delayForImage(at index: Int, source: CGImageSource!) -> Double {
+        var delay = 0.01
         
         let cfProperties = CGImageSourceCopyPropertiesAtIndex(source, index, nil)
         let gifProperties: CFDictionary = unsafeBitCast(CFDictionaryGetValue(cfProperties, Unmanaged.passUnretained(kCGImagePropertyGIFDictionary).toOpaque()), to: CFDictionary.self)
@@ -105,10 +105,12 @@ extension UIImage {
             delayObject = unsafeBitCast(CFDictionaryGetValue(gifProperties, Unmanaged.passUnretained(kCGImagePropertyGIFDelayTime).toOpaque()), to: AnyObject.self)
         }
         
-        delay = delayObject as! Double
+        if let delayObject = delayObject as? Double {
+            delay = delayObject
+        }
         
-        if delay < 0.1 {
-            delay = 0.1
+        if delay < 0.01 {
+            delay = 0.01
         }
         
         return delay
@@ -161,7 +163,7 @@ extension UIImage {
         return gcd
     }
     
-    class func animatedImageWithSource(_ source: CGImageSource) -> UIImage? {
+    class func animatedImage(with source: CGImageSource) -> UIImage? {
         let count = CGImageSourceGetCount(source)
         var images = [CGImage]()
         var delays = [Int]()
@@ -171,7 +173,7 @@ extension UIImage {
                 images.append(image)
             }
             
-            let delaySeconds = UIImage.delayForImageAtIndex(Int(i),source: source)
+            let delaySeconds = UIImage.delayForImage(at: Int(i),source: source)
             delays.append(Int(delaySeconds * 1000.0)) // Seconds to ms
         }
         

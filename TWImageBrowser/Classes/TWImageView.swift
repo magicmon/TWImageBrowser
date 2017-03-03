@@ -133,7 +133,7 @@ class TWImageView: UIScrollView {
                             (rawData as NSData).getBytes(&c, length: 1)
                             
                             if c[0] == 0x47 {       // gif
-                                self.imageView.image = UIImage.gifImageWithData(rawData)
+                                self.imageView.image = UIImage.gifImage(withData: rawData)
                             } else {
                                 self.imageView.image = image
                                 self.maximumZoomScale = self.maximumScale

@@ -1,5 +1,5 @@
 PODS:
-  - Alamofire (4.2.0)
+  - Alamofire (4.4.0)
   - AlamofireImage (3.2.0):
     - Alamofire (~> 4.1)
   - FBSnapshotTestCase (2.1.4):
@@ -7,7 +7,7 @@ PODS:
   - FBSnapshotTestCase/Core (2.1.4)
   - FBSnapshotTestCase/SwiftSupport (2.1.4):
     - FBSnapshotTestCase/Core
-  - TWImageBrowser (1.2.1):
+  - TWImageBrowser (2.0.1):
     - AlamofireImage
 
 DEPENDENCIES:
@@ -19,11 +19,11 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  Alamofire: aa2e09d871c9160ac53c90e83c68064a94e3dfbe
+  Alamofire: dc44b1600b800eb63da6a19039a0083d62a6a62d
   AlamofireImage: 157ed682cc81d3b9db4fb90c1f12180ac552d93b
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
-  TWImageBrowser: e040accaa0e785e2a4742a5e19eecd2f49407c1f
+  TWImageBrowser: a36b8328fa8608f70c620ecf6bdc04a3536ab983
 
 PODFILE CHECKSUM: 9ff71d4766ea4fe30373c5f667bcbd46eebc9fb1
 
-COCOAPODS: 1.1.1
+COCOAPODS: 1.2.0
