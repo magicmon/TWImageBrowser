@@ -8,6 +8,7 @@
 
 import UIKit
 import AlamofireImage
+import FLAnimatedImage
 
 protocol TWImageViewDelegate: class {
     func singleTapGesture(view: TWImageView)
@@ -17,7 +18,7 @@ protocol TWImageViewDelegate: class {
 class TWImageView: UIScrollView {
     
     var containerView : UIView!
-    var imageView : UIImageView!
+    var imageView : FLAnimatedImageView!
     var imageContentMode: UIViewContentMode = .ScaleAspectFit
     
     var indicator: UIActivityIndicatorView!
@@ -74,7 +75,7 @@ class TWImageView: UIScrollView {
         addSubview(containerView)
         
         // image view
-        imageView = UIImageView(frame: self.containerView.bounds)
+        imageView = FLAnimatedImageView(frame: self.containerView.bounds)
         containerView.addSubview(imageView)
         
         // indicator view
@@ -116,7 +117,6 @@ class TWImageView: UIScrollView {
         } else if let urlString = image as? String {
             
             if urlString.hasPrefix("http://") || urlString.hasPrefix("https://") {
-                // url
 
                 self.indicator.startAnimating()
                 
@@ -133,7 +133,7 @@ class TWImageView: UIScrollView {
                             rawData.getBytes(&c, length: 1)
                             
                             if c[0] == 0x47 {       // gif
-                                self.imageView.image = UIImage.gifImageWithData(rawData)
+                                self.imageView.animatedImage = FLAnimatedImage(animatedGIFData: rawData)
                             } else {
                                 self.imageView.image = image
                                 self.maximumZoomScale = self.maximumScale
@@ -148,15 +148,13 @@ class TWImageView: UIScrollView {
                     
                     self.refreshLayout()
                 })
-                
             } else {
                 let components = urlString.componentsSeparatedByString("/")
                 
                 if components.count > 1 {
                     // fullpath가 넘어왔는지 체크
                     self.imageView.image = UIImage(contentsOfFile: urlString)
-                }
-                else {
+                } else {
                     // 파일 이름만 넘어온 경우
                     self.imageView.image = UIImage(named: urlString)
                 }
