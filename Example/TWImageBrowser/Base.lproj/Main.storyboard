@@ -42,6 +42,22 @@
             </objects>
             <point key="canvasLocation" x="1509" y="1563"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="S07-Z2-JgY">
+            <objects>
+                <navigationController id="2g2-xe-Nv3" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="fUs-h7-NAv">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="qvs-59-Wap" kind="relationship" relationship="rootViewController" id="Ob0-oU-XAq"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="F26-pt-GVj" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1509" y="181"/>
+        </scene>
         <!--Normal Controller-->
         <scene sceneID="ZLV-rN-4dd">
             <objects>
@@ -67,13 +83,20 @@
                             <constraint firstAttribute="trailing" secondItem="EuQ-oG-lcP" secondAttribute="trailing" id="ktB-S9-Q31"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="uYo-51-IBy">
+                        <barButtonItem key="leftBarButtonItem" title="Close" id="UiP-q5-Gw6">
+                            <connections>
+                                <action selector="pressedClose" destination="qvs-59-Wap" id="Lzo-pF-fl0"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="testViewer" destination="EuQ-oG-lcP" id="aG9-Ia-2uE"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LUJ-K0-qZq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1509" y="237"/>
+            <point key="canvasLocation" x="2207" y="181"/>
         </scene>
         <!--TWImageBrowser-->
         <scene sceneID="ufC-wZ-h7g">
@@ -107,6 +130,7 @@
                     <navigationItem key="navigationItem" title="TWImageBrowser" id="tn2-fr-j6D"/>
                     <connections>
                         <outlet property="tableView" destination="qC9-b2-1Fi" id="oqO-Kg-Nc1"/>
+                        <segue destination="2g2-xe-Nv3" kind="presentation" identifier="NormalSegue" id="ho3-MO-d5S"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>

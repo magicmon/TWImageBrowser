@@ -9,14 +9,14 @@
 import UIKit
 import TWImageBrowser
 
-class NormalController: UIViewController {
+class NormalController: TWImageBrowserController {
 
    @IBOutlet weak var testViewer : TWImageBrowser!
     var prevButton : UIButton!
     var nextButton : UIButton!
     var label : UILabel!
     
-     var imageList : [AnyObject] = []
+    var imageList : [AnyObject] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -106,7 +106,7 @@ class NormalController: UIViewController {
         view.addSubview(prevButton)
         
         label = UILabel(frame: CGRectMake(0, height, self.view.frame.width, 50))
-        label.text = "1 / \(self.imageList.count)"
+        label.text = "\(imageList.count > 0 ? "1" : "0") / \(self.imageList.count)"
         label.textAlignment = NSTextAlignment.Center
         label.textColor = UIColor.whiteColor()
         view.addSubview(label)
@@ -143,17 +143,23 @@ class NormalController: UIViewController {
             self.nextButton.frame = CGRectMake(self.view.frame.width - 50, height, 50, 50)
             
             }) { (context) in
-                // TODO: complete
-                
+                // TODO: complete 
         }
     }
-    
+}
+
+
+extension NormalController {
     func prevButtonClicked() {
         testViewer.prevPage(true)
     }
     
     func nextButtonClicked() {
         testViewer.nextPage(true)
+    }
+    
+    @IBAction func pressedClose() {
+        self.dismissViewControllerAnimated(true, completion: nil)
     }
 }
 

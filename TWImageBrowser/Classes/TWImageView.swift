@@ -10,6 +10,8 @@ import UIKit
 import AlamofireImage
 import FLAnimatedImage
 
+private var imageRawDataKey: Void?
+
 protocol TWImageViewDelegate: class {
     func singleTapGesture(view: TWImageView)
     func doubleTapGesture(view: TWImageView, currentZoomScale: CGFloat)
@@ -263,6 +265,7 @@ extension TWImageView: UIScrollViewDelegate {
     }
 }
 
+// MARK: - UIImageView extension
 extension UIImageView {
     func contentSize() -> CGSize {
         if let image = self.image {
@@ -270,22 +273,5 @@ extension UIImageView {
         }
         
         return CGSizeZero
-    }
-}
-
-extension UIImage {
-    func sizeThatFits(size:CGSize) -> CGSize {
-        var imageSize = CGSizeMake(self.size.width / self.scale, self.size.height / self.scale)
-        
-        let widthRatio = imageSize.width / size.width
-        let heightRatio = imageSize.height / size.height
-        
-        if widthRatio > heightRatio {
-            imageSize = CGSizeMake(imageSize.width / widthRatio, imageSize.height / widthRatio)
-        } else {
-            imageSize = CGSizeMake(imageSize.width / heightRatio, imageSize.height / heightRatio)
-        }
-        
-        return imageSize
     }
 }

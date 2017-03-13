@@ -7,10 +7,13 @@
 //
 
 import UIKit
+import TWImageBrowser
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet var tableView: UITableView!
+    
+    let interactor = Interactor()
     
     private let kTestCellMenuIdentifier = "kTestCellMenuIdentifier"
     
@@ -58,9 +61,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         switch indexPath.row {
         case 0:
-            if let controller = self.storyboard?.instantiateViewControllerWithIdentifier("NormalController") {
-                self.navigationController?.pushViewController(controller, animated: true)
-            }
+            performSegueWithIdentifier("NormalSegue", sender: nil)
         case 1:
             if let controller = self.storyboard?.instantiateViewControllerWithIdentifier("GIFViewController") {
                 self.navigationController?.pushViewController(controller, animated: true)
@@ -72,8 +73,25 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         default:
             break
         }
-
-        
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if let destinationViewController = segue.destinationViewController as? UINavigationController {
+            
+            destinationViewController.transitioningDelegate = self
+            if let vc = destinationViewController.viewControllers.first as? NormalController {
+                vc.interactor = interactor
+            }
+        }
     }
 }
 
+extension ViewController: UIViewControllerTransitioningDelegate {
+    func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return DismissAnimator()
+    }
+    
+    func interactionControllerForDismissal(animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        return interactor.hasStarted ? interactor : nil
+    }
+}
