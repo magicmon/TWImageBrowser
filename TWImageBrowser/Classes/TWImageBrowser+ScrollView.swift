@@ -34,6 +34,8 @@ extension TWImageBrowser: UIScrollViewDelegate {
     }
     
     public func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+        // Save last viewed page after scrolling
+        lastPage = self.currentPage
         
         // stop scroll
         

@@ -99,6 +99,14 @@ public class TWImageBrowser: UIView {
         self.pageControl.frame = CGRectMake(0, self.bounds.size.height - 20.0, self.bounds.size.width, 20.0)
     }
     
+    
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
+        
+        imageObjects.removeAll()
+        scrollView?.removeFromSuperview()
+    }
+    
     // MARK: - Initial
     func initializeScrollView() {
         // scroll View
@@ -249,6 +257,8 @@ public class TWImageBrowser: UIView {
             // Set page number to display on screen
             self.pageControl.numberOfPages = self.totalPage
             self.pageControl.currentPage = defaultPageIndex
+            
+            lastPage = defaultPageIndex + 1
         } else {
             // If no images are received, only one representative background image is displayed.
             
@@ -272,56 +282,6 @@ public class TWImageBrowser: UIView {
         }
     }
     
-    // MARK: - Orientation
-    func initializeNotification() {
-        NSNotificationCenter.defaultCenter().addObserver(
-            self, selector: #selector(TWImageBrowser.orientationDidChange),
-            name: UIDeviceOrientationDidChangeNotification,
-            object: nil)
-        
-        NSNotificationCenter.defaultCenter().addObserver(
-            self,
-            selector: #selector(TWImageBrowser.statusBarOrientationWillChange),
-            name: UIApplicationWillChangeStatusBarOrientationNotification,
-            object: nil
-        )
-    }
-    
-    deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIApplicationWillChangeStatusBarOrientationNotification, object: nil)
-        
-        imageObjects.removeAll()
-        scrollView?.removeFromSuperview()
-    }
-    
-    func statusBarOrientationWillChange()
-    {
-        lastPage = self.currentPage
-        self.isOrientation = true
-    }
-    
-    func orientationDidChange()
-    {
-        if self.isOrientation  {
-            self.isOrientation = false
-            
-            self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.width * CGFloat(self.imageObjects.count), self.scrollView.frame.height)
-            
-            for (index, subview) in self.scrollView.subviews.enumerate() {
-                
-                subview.frame = frameForView(index)
-                
-                if let imageView = subview as? TWImageView {
-                    imageView.refreshLayout()
-                }
-            }
-            
-            // When the screen change is completed, go to the original page
-            movePage(lastPage, animated: false)
-        }
-    }
-    
     // MARK: Frame
     func frameForView(index: Int) -> CGRect{
         var viewFrame : CGRect = self.scrollView.bounds
@@ -339,6 +299,32 @@ public class TWImageBrowser: UIView {
         nextPage()
         
         self.performSelector(autoScrollFunctionName, withObject: nil, afterDelay: self.autoPlayTimeInterval)
+    }
+}
+
+// MARK: - Orientation
+extension TWImageBrowser {
+    func initializeNotification() {
+        NSNotificationCenter.defaultCenter().addObserver(
+            self, selector: #selector(TWImageBrowser.orientationDidChange),
+            name: UIDeviceOrientationDidChangeNotification,
+            object: nil)
+    }
+    
+    func orientationDidChange() {
+        self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.width * CGFloat(self.imageObjects.count), self.scrollView.frame.height)
+        
+        for (index, subview) in self.scrollView.subviews.enumerate() {
+            
+            subview.frame = frameForView(index)
+            
+            if let imageView = subview as? TWImageView {
+                imageView.refreshLayout()
+            }
+        }
+        
+        // When the screen change is completed, go to the original page
+        movePage(lastPage, animated: false)
     }
 }
 
