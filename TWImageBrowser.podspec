@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'TWImageBrowser'
-  s.version          = '1.3.1'
+  s.version          = '1.3.2'
   s.summary          = 'Simple image browser or banner.'
 
 # This description is used to generate tags and improve search results.
@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
 
   s.homepage         = 'https://github.com/magicmon/TWImageBrowser'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'Tae Woo Kang' => 'sagun25si@gmail.com' }
+  s.author           = { 'magicmon' => 'sagun25si@gmail.com' }
   s.source           = { :git => 'https://github.com/magicmon/TWImageBrowser.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '8.0'

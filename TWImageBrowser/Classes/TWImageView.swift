@@ -28,6 +28,8 @@ class TWImageView: UIScrollView {
     
     var maximumScale: CGFloat = 3.0
     
+    var isGif: Bool = false
+    
     weak var imageDelegate: TWImageViewDelegate?
     
     required init?(coder aDecoder: NSCoder) {
@@ -134,6 +136,9 @@ class TWImageView: UIScrollView {
                             
                             if c[0] == 0x47 {       // gif
                                 self.imageView.animatedImage = FLAnimatedImage(animatedGIFData: rawData)
+                                self.maximumZoomScale = 1.0
+                                
+                                self.isGif = true
                             } else {
                                 self.imageView.image = image
                                 self.maximumZoomScale = self.maximumScale
@@ -234,6 +239,8 @@ extension TWImageView {
         if self.zoomScale > self.minimumZoomScale {
             self.setZoomScale(self.minimumZoomScale, animated: true)
         } else if (self.zoomScale < self.maximumZoomScale) {
+            
+            if isGif { return }
             
             let location = recognizer.locationInView(recognizer.view)
             var zoomToRect = CGRectMake(0, 0, 50, 50)
