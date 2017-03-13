@@ -53,8 +53,23 @@
                     <view key="view" contentMode="scaleToFill" id="07v-ag-UXk">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EuQ-oG-lcP" customClass="TWImageBrowser" customModule="TWImageBrowser">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="EuQ-oG-lcP" firstAttribute="top" secondItem="07v-ag-UXk" secondAttribute="top" id="QzS-RX-yxL"/>
+                            <constraint firstItem="VeS-g4-nAS" firstAttribute="top" secondItem="EuQ-oG-lcP" secondAttribute="bottom" id="V0g-GJ-R9Y"/>
+                            <constraint firstItem="EuQ-oG-lcP" firstAttribute="leading" secondItem="07v-ag-UXk" secondAttribute="leading" id="ZZy-Yn-mKO"/>
+                            <constraint firstAttribute="trailing" secondItem="EuQ-oG-lcP" secondAttribute="trailing" id="ktB-S9-Q31"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="testViewer" destination="EuQ-oG-lcP" id="aG9-Ia-2uE"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LUJ-K0-qZq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

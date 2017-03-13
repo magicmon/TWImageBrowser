@@ -306,12 +306,12 @@ public class TWImageBrowser: UIView {
 extension TWImageBrowser {
     func initializeNotification() {
         NSNotificationCenter.defaultCenter().addObserver(
-            self, selector: #selector(TWImageBrowser.orientationDidChange),
+            self, selector: #selector(TWImageBrowser.orientationDidChangenNotification),
             name: UIDeviceOrientationDidChangeNotification,
             object: nil)
     }
     
-    func orientationDidChange() {
+    public func orientationDidChangenNotification() {
         self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.width * CGFloat(self.imageObjects.count), self.scrollView.frame.height)
         
         for (index, subview) in self.scrollView.subviews.enumerate() {

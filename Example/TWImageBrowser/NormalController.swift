@@ -11,7 +11,7 @@ import TWImageBrowser
 
 class NormalController: UIViewController {
 
-    var testViewer : TWImageBrowser!
+   @IBOutlet weak var testViewer : TWImageBrowser!
     var prevButton : UIButton!
     var nextButton : UIButton!
     var label : UILabel!
@@ -22,7 +22,6 @@ class NormalController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        testViewer = TWImageBrowser(frame: self.view.bounds)
         testViewer.viewPadding = 10.0
         testViewer.browserType = .NORMAL
         testViewer.delegate = self
@@ -127,19 +126,26 @@ class NormalController: UIViewController {
         super.viewDidAppear(animated)
     }
     
-    override func willAnimateRotationToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
+    override func viewWillTransitionToSize(size: CGSize,
+                                           withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
         
-        let height : CGFloat = UIApplication.sharedApplication().statusBarOrientation.isPortrait ? 62.0 : 32.0
-        
-        // 화면 가로/세로 모드 전환 시 꼭 필요
-        testViewer?.frame = self.view.bounds
-        label.frame = CGRectMake(0, height, self.view.frame.width, 50)
-        prevButton.frame = CGRectMake(0, height, 50, 50)
-        nextButton.frame = CGRectMake(self.view.frame.width - 50, height, 50, 50)
-    }
-    
-    override func didRotateFromInterfaceOrientation(fromInterfaceOrientation: UIInterfaceOrientation) {
-        
+        coordinator.animateAlongsideTransition({ (context) in
+            // Code here will execute before the rotation begins.
+            
+            let height : CGFloat = UIApplication.sharedApplication().statusBarOrientation.isPortrait ? 62.0 : 32.0
+            
+            // 화면 가로/세로 모드 전환 시 꼭 필요
+            self.testViewer.orientationDidChangenNotification()
+            
+            self.label.frame = CGRectMake(0, height, self.view.frame.width, 50)
+            self.prevButton.frame = CGRectMake(0, height, 50, 50)
+            self.nextButton.frame = CGRectMake(self.view.frame.width - 50, height, 50, 50)
+            
+            }) { (context) in
+                // TODO: complete
+                
+        }
     }
     
     func prevButtonClicked() {
