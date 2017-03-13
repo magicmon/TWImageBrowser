@@ -58,9 +58,9 @@ extension TWImageBrowser {
      */
     public func nextPage(animated: Bool = true)  -> Int {
         
-        lastPage = self.currentPage
+        lastPage = currentPage + 1 >= totalPage ? totalPage : currentPage + 1
         
-        return movePage(self.currentPage + 1, animated: animated)
+        return movePage(lastPage, animated: animated)
     }
     
     /**
@@ -71,9 +71,9 @@ extension TWImageBrowser {
      */
     public func prevPage(animated: Bool = true)  -> Int {
         
-        lastPage = self.currentPage
+        lastPage = currentPage - 1 <= 1 ? 1 : currentPage - 1
         
-        return movePage(self.currentPage - 1, animated: animated)
+        return movePage(lastPage, animated: animated)
     }
     
     /**
