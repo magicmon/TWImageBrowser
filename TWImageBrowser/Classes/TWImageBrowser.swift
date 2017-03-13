@@ -144,6 +144,11 @@ public class TWImageBrowser: UIView {
             
             if objectList.count == 0 {
                 // TODO: 빈 이미지를 보여주도록 수정
+                self.scrollView.frame = self.bounds
+                self.scrollView.contentSize = self.scrollView.frame.size
+                
+                self.scrollView.setContentOffset(CGPointZero, animated: false)
+                
                 return
             }
             
