@@ -11,18 +11,17 @@ import TWImageBrowser
 
 class GIFViewController: UIViewController {
     
-    var testViewer : TWImageBrowser!
+    @IBOutlet weak var testViewer : TWImageBrowser!
     var prevButton : UIButton!
     var nextButton : UIButton!
     var label : UILabel!
     
-    var imageList : [AnyObject] = []
+    var imageList : [Any] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        testViewer = TWImageBrowser(frame: self.view.bounds)
         testViewer.viewPadding = 10.0
         testViewer.browserType = .normal
         testViewer.delegate = self
@@ -38,32 +37,32 @@ class GIFViewController: UIViewController {
     
     func setGIFList() {
         // 1
-        imageList.append("http://i.giphy.com/l41YeojZ8G5G9cVZC.gif" as AnyObject)
-        imageList.append("http://i.giphy.com/l41YlQSaTWPkYQx8I.gif" as AnyObject)
-        imageList.append("http://i.giphy.com/3oEjHXHXkLmFLqRZ2U.gif" as AnyObject)
-        imageList.append("http://i.giphy.com/3otPoPmNBUk02YKdjy.gif" as AnyObject)
-        imageList.append("http://i.giphy.com/D1HxWh7uNdF4Y.gif" as AnyObject)
+        imageList.append("http://i.giphy.com/l41YeojZ8G5G9cVZC.gif")
+        imageList.append("http://i.giphy.com/l41YlQSaTWPkYQx8I.gif")
+        imageList.append("http://i.giphy.com/3oEjHXHXkLmFLqRZ2U.gif")
+        imageList.append("http://i.giphy.com/3otPoPmNBUk02YKdjy.gif")
+        imageList.append("http://i.giphy.com/D1HxWh7uNdF4Y.gif")
         
         // 2
-        imageList.append("http://i.giphy.com/3o7TKuWAyiu6tICQYU.gif" as AnyObject)
-        imageList.append("http://i.giphy.com/3oz8xJkty91GlgYEg0.gif" as AnyObject)
-        imageList.append("http://i.giphy.com/3o6Ztj26dwdx10reFi.gif" as AnyObject)
-        imageList.append("http://i.giphy.com/xT8qBay7zo6A0xOA3S.gif" as AnyObject)
-        imageList.append("http://i.giphy.com/jzVYqDzxtapFe.gif" as AnyObject)
+        imageList.append("http://i.giphy.com/3o7TKuWAyiu6tICQYU.gif")
+        imageList.append("http://i.giphy.com/3oz8xJkty91GlgYEg0.gif")
+        imageList.append("http://i.giphy.com/3o6Ztj26dwdx10reFi.gif")
+        imageList.append("http://i.giphy.com/xT8qBay7zo6A0xOA3S.gif")
+        imageList.append("http://i.giphy.com/jzVYqDzxtapFe.gif")
         
         // 3
-        imageList.append("http://i.giphy.com/Ko7HuFTsEv1zW.gif" as AnyObject)
-        imageList.append("http://i.giphy.com/64HTMW9A67ROE.gif" as AnyObject)
-        imageList.append("http://i.giphy.com/12y5yZn8ZvSlHy.gif" as AnyObject)
-        imageList.append("http://i.giphy.com/11RJ3ifvNR5eDe.gif" as AnyObject)
-        imageList.append("http://i.giphy.com/xUPOqlYgyI3CQcFEe4.gif" as AnyObject)
+        imageList.append("http://i.giphy.com/Ko7HuFTsEv1zW.gif")
+        imageList.append("http://i.giphy.com/64HTMW9A67ROE.gif")
+        imageList.append("http://i.giphy.com/12y5yZn8ZvSlHy.gif")
+        imageList.append("http://i.giphy.com/11RJ3ifvNR5eDe.gif")
+        imageList.append("http://i.giphy.com/xUPOqlYgyI3CQcFEe4.gif")
         
         // 4
-        imageList.append("http://i.giphy.com/26BRQSNJRFAV5fsGI.gif" as AnyObject)
-        imageList.append("http://i.giphy.com/3oAt2bhPYWJl4fg4Ks.gif" as AnyObject)
-        imageList.append("http://i.giphy.com/3oD3YOxRfDh6UJpsLC.gif" as AnyObject)
-        imageList.append("http://i.giphy.com/l3E6sSkkpkEQdCjYc.gif" as AnyObject)
-        imageList.append("http://i.giphy.com/3o6ozxRrKIQgKyKdoc.gif" as AnyObject)
+        imageList.append("http://i.giphy.com/26BRQSNJRFAV5fsGI.gif")
+        imageList.append("http://i.giphy.com/3oAt2bhPYWJl4fg4Ks.gif")
+        imageList.append("http://i.giphy.com/3oD3YOxRfDh6UJpsLC.gif")
+        imageList.append("http://i.giphy.com/l3E6sSkkpkEQdCjYc.gif")
+        imageList.append("http://i.giphy.com/3o6ozxRrKIQgKyKdoc.gif")
     }
     
     func setTopButton() {
@@ -95,19 +94,23 @@ class GIFViewController: UIViewController {
         super.viewDidAppear(animated)
     }
     
-    override func willAnimateRotation(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
         
-        let height : CGFloat = UIApplication.shared.statusBarOrientation.isPortrait ? 62.0 : 32.0
-        
-        // 화면 가로/세로 모드 전환 시 꼭 필요
-        testViewer?.frame = self.view.bounds
-        label.frame = CGRect(x: 0, y: height, width: self.view.frame.width, height: 50)
-        prevButton.frame = CGRect(x: 0, y: height, width: 50, height: 50)
-        nextButton.frame = CGRect(x: self.view.frame.width - 50, y: height, width: 50, height: 50)
-    }
-    
-    override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
-        
+        coordinator.animate(alongsideTransition: { (context) in
+            // Code here will execute before the rotation begins.
+            
+            let height: CGFloat = UIApplication.shared.statusBarOrientation.isPortrait ? 62.0 : 32.0
+            
+            self.testViewer.orientationDidChangeNotification()
+            
+            self.label.frame = CGRect(x: 0, y: height, width: self.view.frame.width, height: 50)
+            self.prevButton.frame = CGRect(x: 0, y: height, width: 50, height: 50)
+            self.nextButton.frame = CGRect(x: self.view.frame.width - 50, y: height, width: 50, height: 50)
+            
+        }) { (context) in
+            
+        }
     }
     
     func prevButtonClicked() {

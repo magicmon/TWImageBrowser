@@ -1,10 +1,10 @@
 //
-//  TWImageBrowser+GIF.swift
-//  TWImageBrowser
+//  TWImageBrowser+UIImage.swift
+//  Pods
 //
-//  Created by magicmon on 2016. 12. 6..
+//  Created by magicmon on 2017. 3. 14..
 //
-//  https://github.com/kiritmodi2702/GIF-Swift/blob/master/GIF-Swift/iOSDevCenters%2BGIF.swift
+//
 
 import UIKit
 import ImageIO
@@ -12,16 +12,15 @@ import ImageIO
 // FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
 // Consider refactoring the code to use the non-optional operators.
 fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l < r
-  case (nil, _?):
-    return true
-  default:
-    return false
-  }
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l < r
+    case (nil, _?):
+        return true
+    default:
+        return false
+    }
 }
-
 
 private var imageRawDataKey: Void?
 
@@ -36,7 +35,7 @@ extension UIImage {
         }
     }
     
-    public convenience init?(rawData: Data){
+    public convenience init?(rawData: Data) {
         self.init(rawData:rawData)
         self.rawData = rawData
     }
@@ -57,11 +56,28 @@ extension UIImage {
                 method_exchangeImplementations(originalMethod, swizzledMethod)
             }
         }()
-    
+        
         justAOneTimeThing
     }
     
-    // MARK: GIF
+    func sizeThatFits(_ size: CGSize) -> CGSize {
+        var imageSize = CGSize(width: self.size.width / self.scale, height: self.size.height / self.scale)
+        
+        let widthRatio = imageSize.width / size.width
+        let heightRatio = imageSize.height / size.height
+        
+        if widthRatio > heightRatio {
+            imageSize = CGSize(width: imageSize.width / widthRatio, height: imageSize.height / widthRatio)
+        } else {
+            imageSize = CGSize(width: imageSize.width / heightRatio, height: imageSize.height / heightRatio)
+        }
+        
+        return imageSize
+    }
+}
+
+// MARK: GIF
+extension UIImage {
     public class func gifImage(withData data: Data) -> UIImage? {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
             return nil
@@ -84,7 +100,7 @@ extension UIImage {
     
     public class func gifImage(withName name: String) -> UIImage? {
         guard let bundleURL = Bundle.main.url(forResource: name, withExtension: "gif") else {
-                return nil
+            return nil
         }
         
         guard let imageData = try? Data(contentsOf: bundleURL) else {
@@ -95,7 +111,7 @@ extension UIImage {
     }
     
     class func delayForImage(at index: Int, source: CGImageSource!) -> Double {
-        var delay = 0.01
+        var delay = 0.02
         
         let cfProperties = CGImageSourceCopyPropertiesAtIndex(source, index, nil)
         let gifProperties: CFDictionary = unsafeBitCast(CFDictionaryGetValue(cfProperties, Unmanaged.passUnretained(kCGImagePropertyGIFDictionary).toOpaque()), to: CFDictionary.self)
@@ -109,8 +125,8 @@ extension UIImage {
             delay = delayObject
         }
         
-        if delay < 0.01 {
-            delay = 0.01
+        if delay < 0.02 {
+            delay = 0.02
         }
         
         return delay

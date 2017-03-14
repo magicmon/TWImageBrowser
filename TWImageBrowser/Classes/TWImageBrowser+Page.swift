@@ -17,35 +17,36 @@ extension TWImageBrowser {
      * @param animated Decide to start animating when moving the page. Default is true
      * @return Returns the number of the moved page
      */
-    public func movePage(_ toPage: Int, animated: Bool = true) -> Int{
+    public func movePage(to page: Int, animated: Bool = true) -> Int{
         
         switch self.browserType {
         case .normal :
             
             // Load image if it has not already been loaded.
-            loadImageFromView(toPage)
+            loadImageFromView(page)
             
             // Do not move offset unless page range.
-            if toPage < 1 {
+            if page < 1 {
                 return self.currentPage
-            } else if toPage > self.totalPage {
+            } else if page > self.totalPage {
                 return self.currentPage
             }
             
-            self.scrollView.setContentOffset(CGPoint(x: self.scrollView.frame.width * CGFloat(toPage - 1), y: 0), animated: animated)
+            self.scrollView.setContentOffset(CGPoint(x: self.scrollView.frame.width * CGFloat(page - 1), y: 0), animated: animated)
             
-            return toPage
+            return page
             
         case .banner:
-            self.scrollView.setContentOffset(CGPoint(x: self.scrollView.frame.width * CGFloat(toPage), y: 0), animated: animated)
+            self.scrollView.setContentOffset(CGPoint(x: self.scrollView.frame.width * CGFloat(page), y: 0), animated: animated)
             
-            if toPage > self.totalPage {
+            if page > self.totalPage {
                 // Go to the first page from the last page.
+                lastPage = 1
                 return 1
-            } else if toPage < 1 {
+            } else if page < 1 {
                 return self.totalPage
             } else {
-                return toPage
+                return page
             }
         }
     }
@@ -57,10 +58,13 @@ extension TWImageBrowser {
      * @return Returns the number of the moved page
      */
     public func nextPage(_ animated: Bool = true)  -> Int {
-        
-        lastPage = self.currentPage
-        
-        return movePage(self.currentPage + 1, animated: animated)
+        if self.browserType == .banner {
+            lastPage = self.currentPage + 1
+            return movePage(to: lastPage, animated: animated)
+        } else {
+            lastPage = self.currentPage + 1 >= totalPage ? totalPage : currentPage + 1
+            return movePage(to: lastPage, animated: animated)
+        }
     }
     
     /**
@@ -71,9 +75,9 @@ extension TWImageBrowser {
      */
     public func prevPage(_ animated: Bool = true) -> Int {
         
-        lastPage = self.currentPage
+        lastPage = self.currentPage - 1 <= 1 ? 1 : self.currentPage - 1
         
-        return movePage(self.currentPage - 1, animated: animated)
+        return movePage(to: lastPage, animated: animated)
     }
     
     /**

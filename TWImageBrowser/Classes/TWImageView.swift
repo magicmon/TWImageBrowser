@@ -27,6 +27,8 @@ class TWImageView: UIScrollView {
     
     var maximumScale: CGFloat = 3.0
     
+    var isGif: Bool = false
+    
     weak var imageDelegate: TWImageViewDelegate?
     
     required init?(coder aDecoder: NSCoder) {
@@ -116,8 +118,7 @@ class TWImageView: UIScrollView {
         } else if let urlString = image as? String {
             
             if urlString.hasPrefix("http://") || urlString.hasPrefix("https://") {
-                // url
-
+                
                 self.indicator.startAnimating()
                 
                 TWImageCache.sharedInstance().cacheImageWithURL(urlString, completion: { (image) in
@@ -134,6 +135,9 @@ class TWImageView: UIScrollView {
                             
                             if c[0] == 0x47 {       // gif
                                 self.imageView.image = UIImage.gifImage(withData: rawData)
+                                self.maximumZoomScale = 1.0
+                                
+                                self.isGif = true
                             } else {
                                 self.imageView.image = image
                                 self.maximumZoomScale = self.maximumScale
@@ -148,7 +152,6 @@ class TWImageView: UIScrollView {
                     
                     self.refreshLayout()
                 })
-                
             } else {
                 let components = urlString.components(separatedBy: "/")
                 
@@ -172,7 +175,7 @@ class TWImageView: UIScrollView {
         self.containerView.frame = self.bounds
         self.imageView.frame = self.containerView.bounds
         
-        let imageSize = self.imageView.contentSize()
+        let imageSize = self.imageView.contentSize
         
         self.containerView.frame = CGRect(x: 0, y: 0, width: imageSize.width, height: imageSize.height)
         self.imageView.center = CGPoint(x: imageSize.width / 2, y: imageSize.height / 2)
@@ -199,7 +202,7 @@ class TWImageView: UIScrollView {
             return 1.0
         }
         
-        let imagePresentationSize: CGSize = self.imageView.contentSize()
+        let imagePresentationSize: CGSize = self.imageView.contentSize
         
         return max(imageSize.height / imagePresentationSize.height, imageSize.width / imagePresentationSize.width)
     }
@@ -236,6 +239,8 @@ extension TWImageView {
             self.setZoomScale(self.minimumZoomScale, animated: true)
         } else if (self.zoomScale < self.maximumZoomScale) {
             
+            if isGif { return }
+            
             let location = recognizer.location(in: recognizer.view)
             var zoomToRect = CGRect(x: 0, y: 0, width: 50, height: 50)
             zoomToRect.origin = CGPoint(x: location.x - zoomToRect.width / 2, y: location.y - zoomToRect.height / 2)
@@ -257,29 +262,13 @@ extension TWImageView: UIScrollViewDelegate {
     }
 }
 
+// MARK: - UIImageView extension
 extension UIImageView {
-    func contentSize() -> CGSize {
+    var contentSize: CGSize {
         if let image = self.image {
             return image.sizeThatFits(self.bounds.size)
         }
         
         return CGSize.zero
-    }
-}
-
-extension UIImage {
-    func sizeThatFits(_ size:CGSize) -> CGSize {
-        var imageSize = CGSize(width: self.size.width / self.scale, height: self.size.height / self.scale)
-        
-        let widthRatio = imageSize.width / size.width
-        let heightRatio = imageSize.height / size.height
-        
-        if widthRatio > heightRatio {
-            imageSize = CGSize(width: imageSize.width / widthRatio, height: imageSize.height / widthRatio)
-        } else {
-            imageSize = CGSize(width: imageSize.width / heightRatio, height: imageSize.height / heightRatio)
-        }
-        
-        return imageSize
     }
 }

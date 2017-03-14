@@ -11,15 +11,12 @@ import TWImageBrowser
 
 class BannerController: UIViewController, TWImageBrowserDelegate, TWImageBrowserDataSource {
     
-    var testViewer: TWImageBrowser!
+    @IBOutlet weak var testViewer : TWImageBrowser!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        let height : CGFloat = UIApplication.shared.statusBarOrientation.isPortrait ? 0.0 : 32.0
-        
-        testViewer = TWImageBrowser(frame: CGRect(x: 0, y: height + 64.0, width: self.view.frame.size.width, height: 150))
         testViewer.browserType = .banner
         testViewer.delegate = self
         testViewer.dataSource = self
@@ -35,16 +32,16 @@ class BannerController: UIViewController, TWImageBrowserDelegate, TWImageBrowser
         // Dispose of any resources that can be recreated.
     }
     
-    override func willAnimateRotation(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
         
-        let height : CGFloat = UIApplication.shared.statusBarOrientation.isPortrait ? 62.0 : 32.0
-        
-        // 화면 가로/세로 모드 전환 시 꼭 필요
-        testViewer?.frame = CGRect(x: 0, y: height, width: self.view.frame.size.width, height: 150)
-    }
-    
-    override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
-        
+        coordinator.animate(alongsideTransition: { (context) in
+            // Code here will execute before the rotation begins.
+            self.testViewer.orientationDidChangeNotification()
+            
+        }) { (context) in
+            
+        }
     }
     
     // MARK: - DataSource

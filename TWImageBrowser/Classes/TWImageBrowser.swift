@@ -35,7 +35,6 @@ open class TWImageBrowser: UIView {
     internal var pageControl: UIPageControl!
     
     internal var lastPage: Int = 1                          // Specifying the last move page.
-    internal var isOrientation: Bool = false                // Check if the screen is rotating
     
     open weak var dataSource: TWImageBrowserDataSource?
     open weak var delegate: TWImageBrowserDelegate?
@@ -99,6 +98,13 @@ open class TWImageBrowser: UIView {
         self.pageControl.frame = CGRect(x: 0, y: self.bounds.size.height - 20.0, width: self.bounds.size.width, height: 20.0)
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
+        
+        imageObjects.removeAll()
+        scrollView?.removeFromSuperview()
+    }
+    
     // MARK: - Initial
     func initializeScrollView() {
         // scroll View
@@ -136,6 +142,10 @@ open class TWImageBrowser: UIView {
             
             if objectList.count == 0 {
                 // TODO: 빈 이미지를 보여주도록 수정
+                self.scrollView.frame = self.bounds
+                self.scrollView.contentSize = self.scrollView.frame.size
+                self.scrollView.setContentOffset(CGPoint.zero, animated: false)
+                
                 return
             }
             
@@ -250,6 +260,8 @@ open class TWImageBrowser: UIView {
             // Set page number to display on screen
             self.pageControl.numberOfPages = self.totalPage
             self.pageControl.currentPage = defaultPageIndex
+            
+            lastPage = defaultPageIndex + 1
         } else {
             // If no images are received, only one representative background image is displayed.
             
@@ -273,56 +285,6 @@ open class TWImageBrowser: UIView {
         }
     }
     
-    // MARK: - Orientation
-    func initializeNotification() {
-        NotificationCenter.default.addObserver(
-            self, selector: #selector(TWImageBrowser.orientationDidChange),
-            name: NSNotification.Name.UIDeviceOrientationDidChange,
-            object: nil)
-        
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(TWImageBrowser.statusBarOrientationWillChange),
-            name: NSNotification.Name.UIApplicationWillChangeStatusBarOrientation,
-            object: nil
-        )
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationWillChangeStatusBarOrientation, object: nil)
-        
-        imageObjects.removeAll()
-        scrollView?.removeFromSuperview()
-    }
-    
-    func statusBarOrientationWillChange()
-    {
-        lastPage = self.currentPage
-        self.isOrientation = true
-    }
-    
-    func orientationDidChange()
-    {
-        if self.isOrientation  {
-            self.isOrientation = false
-            
-            self.scrollView.contentSize = CGSize(width: self.scrollView.frame.width * CGFloat(self.imageObjects.count), height: self.scrollView.frame.height)
-            
-            for (index, subview) in self.scrollView.subviews.enumerated() {
-                
-                subview.frame = frameForView(index)
-                
-                if let imageView = subview as? TWImageView {
-                    imageView.refreshLayout()
-                }
-            }
-            
-            // When the screen change is completed, go to the original page
-            movePage(lastPage, animated: false)
-        }
-    }
-    
     // MARK: Frame
     func frameForView(_ index: Int) -> CGRect{
         var viewFrame : CGRect = self.scrollView.bounds
@@ -340,6 +302,33 @@ open class TWImageBrowser: UIView {
         nextPage()
         
         self.perform(autoScrollFunctionName, with: nil, afterDelay: self.autoPlayTimeInterval)
+    }
+}
+
+// MARK: - Orientation
+extension TWImageBrowser {
+    func initializeNotification() {
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(TWImageBrowser.orientationDidChangeNotification),
+            name: NSNotification.Name.UIDeviceOrientationDidChange,
+            object: nil)
+    }
+    
+    public func orientationDidChangeNotification()
+    {
+        self.scrollView.contentSize = CGSize(width: self.scrollView.frame.width * CGFloat(self.imageObjects.count), height: self.scrollView.frame.height)
+        
+        for (index, subview) in self.scrollView.subviews.enumerated() {
+            
+            subview.frame = frameForView(index)
+            
+            if let imageView = subview as? TWImageView {
+                imageView.refreshLayout()
+            }
+        }
+        
+        // When the screen change is completed, go to the original page
+        movePage(to: lastPage, animated: false)
     }
 }
 
