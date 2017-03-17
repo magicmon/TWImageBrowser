@@ -36,16 +36,16 @@ open class TWImageBrowser: UIView {
     
     internal var lastPage: Int = 1                          // Specifying the last move page.
     
-    open weak var dataSource: TWImageBrowserDataSource?
-    open weak var delegate: TWImageBrowserDelegate?
+    public weak var dataSource: TWImageBrowserDataSource?
+    public weak var delegate: TWImageBrowserDelegate?
     
-    open var imageObjects: [Any] = []                       // A list of images
-    open var browserType: TWImageBrowserType = .normal      // Browser Type
-    open var autoPlayTimeInterval: TimeInterval = 3.0       // Set auto scrolling time (auto scrolling if higher than 0.0).
+    public var imageObjects: [Any] = []                       // A list of images
+    public var browserType: TWImageBrowserType = .normal      // Browser Type
+    public var autoPlayTimeInterval: TimeInterval = 3.0       // Set auto scrolling time (auto scrolling if higher than 0.0).
     
-    open var hiddenPageControl: Bool = false                // Whether pagecontrol is visible in bottom.
+    public var hiddenPageControl: Bool = false                // Whether pagecontrol is visible in bottom.
     
-    open var maximumScale: CGFloat = 3.0 {                  // maximum zoom scale (If you are loading a gif, set the max scale to 1.0)
+    public var maximumScale: CGFloat = 3.0 {                  // maximum zoom scale (If you are loading a gif, set the max scale to 1.0)
         didSet {
             if maximumScale < 1.0 {
                 maximumScale = 1
@@ -53,7 +53,7 @@ open class TWImageBrowser: UIView {
         }
     }
     
-    open var viewPadding: CGFloat = 0.0 {                   // The spacing between each image view
+    public var viewPadding: CGFloat = 0.0 {                   // The spacing between each image view
         didSet {
             if viewPadding < 0.0 {
                 viewPadding = 0
@@ -286,7 +286,7 @@ open class TWImageBrowser: UIView {
     }
     
     // MARK: Frame
-    func frameForView(_ index: Int) -> CGRect{
+    func frameForView(_ index: Int) -> CGRect {
         var viewFrame : CGRect = self.scrollView.bounds
         viewFrame.origin.x = viewFrame.size.width * CGFloat(index)
         viewFrame.origin.y = 0.0
@@ -328,7 +328,7 @@ extension TWImageBrowser {
         }
         
         // When the screen change is completed, go to the original page
-        movePage(to: lastPage, animated: false)
+        move(to: lastPage, animated: false)
     }
 }
 

@@ -15,11 +15,11 @@ extension UIView {
 
 extension TWImageBrowser {
     
-    func loadImageFromView(_ toPage: Int) {
-        if toPage - 1 >= 0 && toPage <= self.imageObjects.count {
-            if let imageView = self.scrollView.subviews[toPage - 1] as? TWImageView {
+    func setupImage(from page: Int) {
+        if page - 1 >= 0 && page <= self.imageObjects.count {
+            if let imageView = self.scrollView.subviews[page - 1] as? TWImageView {
                 if imageView.imageView.image == nil {
-                    let obj = self.imageObjects[toPage - 1]
+                    let obj = self.imageObjects[page - 1]
                     imageView.setupImage(obj)
                 }
             }

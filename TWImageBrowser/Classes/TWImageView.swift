@@ -121,7 +121,7 @@ class TWImageView: UIScrollView {
                 
                 self.indicator.startAnimating()
                 
-                TWImageCache.sharedInstance().cacheImageWithURL(urlString, completion: { (image) in
+                TWImageCache.sharedInstance().cacheImage(withURL: urlString, completion: { (image) in
                     
                     self.indicator.stopAnimating()
                     

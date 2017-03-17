@@ -7,7 +7,7 @@ PODS:
   - FBSnapshotTestCase/Core (2.1.4)
   - FBSnapshotTestCase/SwiftSupport (2.1.4):
     - FBSnapshotTestCase/Core
-  - TWImageBrowser (2.0.2):
+  - TWImageBrowser (2.0.3):
     - AlamofireImage
 
 DEPENDENCIES:
@@ -22,7 +22,7 @@ SPEC CHECKSUMS:
   Alamofire: dc44b1600b800eb63da6a19039a0083d62a6a62d
   AlamofireImage: 157ed682cc81d3b9db4fb90c1f12180ac552d93b
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
-  TWImageBrowser: 82cc1efd621be2c6c2f5fcdfac63b195ce384c75
+  TWImageBrowser: afd9e9ce9a7ca7d344e88de06de11af273eccb76
 
 PODFILE CHECKSUM: b99d3f1c0ccad15acb11553a3cc3835b01ccbabc
 

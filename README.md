@@ -1,5 +1,12 @@
 # TWImageBrowser
+[![Version](https://img.shields.io/cocoapods/v/WCLShineButton.svg?style=flat)](http://cocoapods.org/pods/WCLShineButton)
+[![License](https://img.shields.io/cocoapods/l/WCLShineButton.svg?style=flat)](http://cocoapods.org/pods/WCLShineButton)
+[![Platform](https://img.shields.io/cocoapods/p/WCLShineButton.svg?style=flat)](http://cocoapods.org/pods/WCLShineButton)
+[![Support](https://img.shields.io/badge/support-iOS%208%2B%20-blue.svg?style=flat)](https://www.apple.com/nl/ios/) 
+![Language](https://img.shields.io/badge/Language-%20swift%20%20-blue.svg)
 
+A simple image browser.
+Add UIImage, URL, GIF type.
 
 ## Demo
 ![Demo](https://raw.githubusercontent.com/magicmon/TWImageBrowser/master/normal.gif)
@@ -10,23 +17,23 @@
 ## Usage
 ```
 let viewer = TWImageBrowser(frame: self.view.bounds)
-viewer.viewInset = 10.0
-viewer.browserType = .NORMAL    // or .BANNER
+viewer.viewPadding = 10.0
+viewer.browserType = .normal    // or .banner
 viewer.delegate = self
 viewer.dataSource = self
-viewer.backgroundColor = UIColor.blackColor()
+viewer.backgroundColor = UIColor.black
 self.automaticallyAdjustsScrollViewInsets = false   // precondition
 view.addSubview(viewer)
 ```
 
 DataSource
 ```
-func backgroundImage(imageBrowser : TWImageBrowser) -> UIImage? {
+func backgroundImage(_ imageBrowser : TWImageBrowser) -> UIImage? {
     return nil
 }
 
-func loadObjects(imageBrowser : TWImageBrowser) -> [AnyObject]? {
-    let imageList: [AnyObject] = []
+func loadObjects(_ imageBrowser : TWImageBrowser) -> [Any]? {
+    let imageList: [Any] = []
     imageList.append("image0.jpg")
     imageList.append("image1.jpg")
 
@@ -36,13 +43,22 @@ func loadObjects(imageBrowser : TWImageBrowser) -> [AnyObject]? {
 
 Delegate
 ```
-func imageBrowserDidScroll(imageBrowser: TWImageBrowser) {
+func imageBrowserDidScroll(_ imageBrowser : TWImageBrowser) {
 
 }
 
-func imageBrowserDidEndScrollingAnimation(imageBrowser: TWImageBrowser) {
+func imageBrowserDidEndScrollingAnimation(_ imageBrowser : TWImageBrowser) {
 
 }
+
+func imageBrowserDidSingleTap(_ imageBrowser: TWImageBrowser, page: Int) {
+
+}
+
+func imageBrowserDidDoubleTap(_ imageBrowser: TWImageBrowser, page: Int, currentZoomScale: CGFloat) {
+
+}
+
 ```
 
 
@@ -50,7 +66,6 @@ func imageBrowserDidEndScrollingAnimation(imageBrowser: TWImageBrowser) {
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
-## Requirements
 
 ## Installation
 
@@ -69,7 +84,7 @@ pod 'TWImageBrowser', :branch => 'swift2.3'
 
 ## Author
 
-Tae Woo Kang, http://magicmon.tistory.com
+magicmon, http://magicmon.tistory.com
 
 ## License
 

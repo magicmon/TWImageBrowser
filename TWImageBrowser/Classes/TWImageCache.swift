@@ -31,9 +31,9 @@ internal class TWImageCache {
         return imageCache
     }
     
-    func cacheImageWithURL(_ imageURLString: String?, completion: ((UIImage?) -> Void)? = nil) {
+    func cacheImage(withURL string: String?, completion: ((UIImage?) -> Void)? = nil) {
         
-        guard let imageURLString = imageURLString else {
+        guard let imageURLString = string else {
             return
         }
         

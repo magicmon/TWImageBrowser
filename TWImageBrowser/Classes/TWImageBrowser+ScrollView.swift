@@ -53,7 +53,7 @@ extension TWImageBrowser: UIScrollViewDelegate {
         switch self.browserType {
         case .normal:
             // Load image if it has not already been loaded.
-            loadImageFromView(self.scrollView.currentPage)
+            setupImage(from: self.scrollView.currentPage)
             
             // Initialize zoomScale when you go to another page.
             for index in 0...self.imageObjects.count - 1 {
