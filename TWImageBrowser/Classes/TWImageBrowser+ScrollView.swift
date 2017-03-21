@@ -48,8 +48,6 @@ extension TWImageBrowser: UIScrollViewDelegate {
     }
     
     public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        
-        
         switch self.browserType {
         case .normal:
             // Load image if it has not already been loaded.

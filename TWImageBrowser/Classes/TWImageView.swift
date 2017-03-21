@@ -8,6 +8,7 @@
 
 import UIKit
 import AlamofireImage
+import FLAnimatedImage
 
 protocol TWImageViewDelegate: class {
     func singleTapGesture(_ view: TWImageView)
@@ -17,7 +18,7 @@ protocol TWImageViewDelegate: class {
 class TWImageView: UIScrollView {
     
     var containerView : UIView!
-    var imageView : UIImageView!
+    var imageView : FLAnimatedImageView!
     var imageContentMode: UIViewContentMode = .scaleAspectFit
     
     var indicator: UIActivityIndicatorView!
@@ -76,7 +77,7 @@ class TWImageView: UIScrollView {
         addSubview(containerView)
         
         // image view
-        imageView = UIImageView(frame: self.containerView.bounds)
+        imageView = FLAnimatedImageView(frame: self.containerView.bounds)
         containerView.addSubview(imageView)
         
         // indicator view
@@ -134,7 +135,7 @@ class TWImageView: UIScrollView {
                             (rawData as NSData).getBytes(&c, length: 1)
                             
                             if c[0] == 0x47 {       // gif
-                                self.imageView.image = UIImage.gifImage(withData: rawData)
+                                self.imageView.animatedImage = FLAnimatedImage(animatedGIFData: rawData)
                                 self.maximumZoomScale = 1.0
                                 
                                 self.isGif = true
